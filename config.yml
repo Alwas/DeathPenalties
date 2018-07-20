@@ -1,0 +1,8 @@
+enabled: true
+respawnHealthPercentage: 0.2
+respawnFoodPercentage: 0.4
+effectsDurationFormatInSeconds: true
+effectsLevelFormatTrueLevel: true
+effects:
+  - SLOWNESS:30:2:false
+  - WEAKNESS:120:2:false
