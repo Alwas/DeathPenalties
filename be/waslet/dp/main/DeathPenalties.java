@@ -43,7 +43,7 @@ public class DeathPenalties extends JavaPlugin implements Listener
 	@Override
 	public boolean onCommand (CommandSender sender, Command command, String label, String[] args)
 	{
-		if (label.equalsIgnoreCase("dp") || label.equalsIgnoreCase("dphelp"))
+		if ((label.equalsIgnoreCase("dp") || label.equalsIgnoreCase("dphelp")) && sender.hasPermission("dp.commands.infos"))
 		{
 			sender.sendMessage("Available commands for DeathPenalties plugin are:\n"
 					+ "/dphelp (Shows all the commands available)\n"
@@ -53,12 +53,12 @@ public class DeathPenalties extends JavaPlugin implements Listener
 					+ "/dptoggle (Changes the current state of death penalties)");
 			return true;
 		}
-		if (label.equalsIgnoreCase("dpstate"))
+		if (label.equalsIgnoreCase("dpstate") && sender.hasPermission("dp.commands.infos"))
 		{
 			sender.sendMessage("Death penalties are currently " + ((enabled) ? "enabled" : "disabled"));
 			return true;
 		}
-		if (label.equalsIgnoreCase("dpenable"))
+		if (label.equalsIgnoreCase("dpenable") && sender.hasPermission("dp.commands.toggle"))
 		{
 			if (enabled)
 			{
@@ -68,7 +68,7 @@ public class DeathPenalties extends JavaPlugin implements Listener
 			setState(sender, true);
 			return true;
 		}
-		if (label.equalsIgnoreCase("dpdisable"))
+		if (label.equalsIgnoreCase("dpdisable") && sender.hasPermission("dp.commands.toggle"))
 		{
 			if (!enabled)
 			{
@@ -78,7 +78,7 @@ public class DeathPenalties extends JavaPlugin implements Listener
 			setState(sender, false);
 			return true;
 		}
-		if (label.equalsIgnoreCase("dptoggle"))
+		if (label.equalsIgnoreCase("dptoggle") && sender.hasPermission("dp.commands.toggle"))
 		{
 			setState(sender, !enabled);
 			return true;
