@@ -1,8 +1,33 @@
+# DeathPenalties plugin configuration
+# For more information and/or support visit: https://www.spigotmc.org/resources/deathpenalties.58944/
+
 enabled: true
+# value used to know if death penalties should be applied or not
+
+respawnHealthValue: 0.0
+# health penalized player will respawn with
+# if value <= 0 percentage value is used instead
+
+respawnFoodValue: 0.0
+# food penalized player will respawn with
+# if value <= 0 percentage value is used instead
+
 respawnHealthPercentage: 0.2
+# health penalized player will respawn with in percentage (0.21 is 21 percents)
+# warning this value is ignored if you have set a health value > 0
+
 respawnFoodPercentage: 0.4
+# food penalized player will respawn with in percentage (0.41 is 41 percents)
+# warning this value is ignored if you have set a food value > 0
+
 effectsDurationFormatInSeconds: true
+# duration in effects formatting is in seconds
+
 effectsLevelFormatTrueLevel: true
+# level in effects formatting is entered level (not starting from 0)
+
+# effects format is EFFECT_NAME:DURATION:LEVEL:SHOW_PARTICLES
+# list of all effects names available here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html
 effects:
   - SLOWNESS:30:2:false
   - WEAKNESS:120:2:false

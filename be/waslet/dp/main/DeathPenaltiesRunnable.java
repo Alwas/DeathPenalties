@@ -9,6 +9,8 @@ public class DeathPenaltiesRunnable extends BukkitRunnable
 {
 
 	private static final int FOOD_LEVEL_MAX_VALUE = 20;
+	private static double healthValue;
+	private static double foodValue;
 	private static double healthPercentage;
 	private static double foodPercentage;
 	private static PotionEffect[] potionEffects;
@@ -22,8 +24,22 @@ public class DeathPenaltiesRunnable extends BukkitRunnable
 	@Override
 	public void run ()
 	{
-		if (healthPercentage < 1) player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * healthPercentage);
-		if (foodPercentage < 1) player.setFoodLevel((int) (FOOD_LEVEL_MAX_VALUE * foodPercentage));
+		if (healthValue <= 0)
+		{
+			if (healthPercentage < 1) player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * healthPercentage);
+		}
+		else
+		{
+			player.setHealth(healthValue);
+		}
+		if (foodValue <= 0)
+		{
+			if (foodPercentage < 1) player.setFoodLevel((int) (FOOD_LEVEL_MAX_VALUE * foodPercentage));
+		}
+		else
+		{
+			player.setFoodLevel((int) foodValue);
+		}
 		for (PotionEffect potionEffect : potionEffects)
 		{
 			if (potionEffect != null)
@@ -33,8 +49,10 @@ public class DeathPenaltiesRunnable extends BukkitRunnable
 		}
 	}
 	
-	public static void updateValues (double health, double food, PotionEffect[] effects)
+	public static void updateValues (double healthFlat, double foodFlat, double health, double food, PotionEffect[] effects)
 	{
+		healthValue = healthFlat;
+		foodValue = foodFlat;
 		healthPercentage = health;
 		foodPercentage = food;
 		potionEffects = effects;

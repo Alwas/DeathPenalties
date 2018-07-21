@@ -2,7 +2,7 @@ name: DeathPenalties
 load: STARTUP
 description: DeathPenalties is a plugin from the WaffleProject's plugins collection that is designed to prevent players to abuse from death advantages and even penalize them !
 main: be.waslet.dp.main.DeathPenalties
-version: Release-1.0
+version: Release-1.1
 authors: [Sigma1640, Wha14wha, Whawhatausore]
 website: http://www.waffleproject.com/
 database: false

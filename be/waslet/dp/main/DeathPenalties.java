@@ -29,7 +29,7 @@ public class DeathPenalties extends JavaPlugin implements Listener
 		{
 			potionEffects[position++] = parsePotionEffect(effectFormat, getConfig().getBoolean("effectsDurationFormatInSeconds"), getConfig().getBoolean("effectsLevelFormatTrueLevel"));
 		}
-		DeathPenaltiesRunnable.updateValues(getConfig().getDouble("respawnHealthPercentage"), getConfig().getDouble("respawnFoodPercentage"), potionEffects);
+		DeathPenaltiesRunnable.updateValues(getConfig().getDouble("respawnHealthValue"), getConfig().getDouble("respawnFoodValue"), getConfig().getDouble("respawnHealthPercentage"), getConfig().getDouble("respawnFoodPercentage"), potionEffects);
 		getServer().getPluginManager().registerEvents(this, this);
 	}
 
