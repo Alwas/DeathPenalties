@@ -9,53 +9,58 @@ public class DeathPenaltiesRunnable extends BukkitRunnable
 {
 
 	private static final int FOOD_LEVEL_MAX_VALUE = 20;
-	private static double healthValue;
-	private static double foodValue;
-	private static double healthPercentage;
-	private static double foodPercentage;
-	private static PotionEffect[] potionEffects;
+	private DeathPenaltiesWorld world;
 	private Player player;
 	
-	public DeathPenaltiesRunnable (Player player)
+	/**
+	 * Creates a new BukkitRunnable that applies death penalties when runned
+	 * @param player Respawning player death penalties should be applied to
+	 * @param respawnHealthValue Flat health value that player will have after respawn (0 or less for percentages use)
+	 * @param respawnFoodValue Flat food value that player will have after respawn (0 or less for percentages use)
+	 * @param respawnHealthPercentage Health value that player will have after respawn in percentage (ignored if flat value > 0)
+	 * @param respawnFoodPercentage Food value that player will have after respawn in percentage (ignored if flat value > 0)
+	 * @param respawnEffects Array of effects to apply to player after respawn
+	 */
+	public DeathPenaltiesRunnable (Player player, DeathPenaltiesWorld world)
 	{
 		this.player = player;
+		this.world = world;
 	}
 	
 	@Override
 	public void run ()
 	{
-		if (healthValue <= 0)
+		// if flat value is disabled use percentage
+		if (world.getRespawnHealthFlat() <= 0)
 		{
-			if (healthPercentage < 1) player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * healthPercentage);
+			// only set value if we have a valid percentage
+			if (world.getRespawnHealthPercentage() <= 1 && world.getRespawnHealthPercentage() > 0) player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * world.getRespawnHealthPercentage());
 		}
 		else
 		{
-			player.setHealth(healthValue);
+			// updating player with flat value
+			player.setHealth(world.getRespawnHealthFlat());
 		}
-		if (foodValue <= 0)
+		// if flat value is disabled use percentage
+		if (world.getRespawnFoodFlat() <= 0)
 		{
-			if (foodPercentage < 1) player.setFoodLevel((int) (FOOD_LEVEL_MAX_VALUE * foodPercentage));
+			// only set value if we have a valid percentage
+			if (world.getRespawnFoodPercentage() <= 1 && world.getRespawnFoodPercentage() > 0) player.setFoodLevel((int) (FOOD_LEVEL_MAX_VALUE * world.getRespawnFoodPercentage()));
 		}
 		else
 		{
-			player.setFoodLevel((int) foodValue);
+			// updating player with flat value
+			player.setFoodLevel(world.getRespawnFoodFlat());
 		}
-		for (PotionEffect potionEffect : potionEffects)
+		// apply all potions effects
+		if (world.getRespawnEffects() != null)
+		for (PotionEffect potionEffect : world.getRespawnEffects())
 		{
 			if (potionEffect != null)
 			{
 				player.addPotionEffect(potionEffect);
 			}
 		}
-	}
-	
-	public static void updateValues (double healthFlat, double foodFlat, double health, double food, PotionEffect[] effects)
-	{
-		healthValue = healthFlat;
-		foodValue = foodFlat;
-		healthPercentage = health;
-		foodPercentage = food;
-		potionEffects = effects;
 	}
 	
 }

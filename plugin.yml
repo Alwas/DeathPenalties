@@ -1,26 +1,26 @@
 name: DeathPenalties
-load: STARTUP
+load: POSTWORLD
 description: DeathPenalties is a plugin from the WaffleProject's plugins collection that is designed to prevent players to abuse from death advantages and even penalize them !
 main: be.waslet.dp.main.DeathPenalties
-version: Release-1.1
-authors: [Sigma1640, Wha14wha, Whawhatausore]
+version: Release-1.2
+authors: [Wha14wha, Whawhatausore]
 website: http://www.waffleproject.com/
 database: false
 permissions:
   dp.ignore:
     description: This permission allow you to ignore death penalties
     default: op
-  dp.commands.infos:
+  dp.commands.info:
     description: This permission allows the usage of info level commands
     default: op
-  dp.commands.toggle:
-    description: This permission allows the usage of toggling level commands
+  dp.commands.edit:
+    description: This permission allows the usage of editing level commands
     default: op
   dp.commands.*:
     description: This permission allows the usage of all commands
     default: op
     children:
-      dp.commands.infos: true
+      dp.commands.info: true
       dp.commands.toggle: true
   dp.*:
     description: This permission allow you to ignore death penalties and allows the usage of all commands
@@ -29,21 +29,11 @@ permissions:
       dp.ignore: true
       dp.commands.*: true
 commands:
-  dp:
-    description: Shows all the commands available
-    permission: dp.commands.infos
-  dphelp:
-    description: Shows all the commands available
-    permission: dp.commands.infos
   dpstate:
-    description: Shows if death penalties are enabled or disabled
-    permission: dp.commands.infos
-  dpenable:
-    description: Enables death penalties
-    permission: dp.commands.toggle
-  dpdisable:
-    description: Disables death penalties
-    permission: dp.commands.toggle
-  dptoggle:
-    description: Changes the current state of death penalties (switches on to off or off to on)
-    permission: dp.commands.toggle
+    description: Shows death penalties world(s) values
+    usage: /dpstate <world_name> (You can use the word "all" to see every worlds state)
+    permission: dp.commands.info
+  dpedit:
+    description: Edit death penalties world(s) values
+    usage: /dpedit <world_name> <option_name> <option_value> (You can use the word "all" to edit every worlds)
+    permission: dp.commands.edit

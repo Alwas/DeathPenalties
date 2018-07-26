@@ -1,33 +1,72 @@
 # DeathPenalties plugin configuration
 # For more information and/or support visit: https://www.spigotmc.org/resources/deathpenalties.58944/
 
-enabled: true
-# value used to know if death penalties should be applied or not
+##### GENERAL CONFIGURATION VALUES #####
 
-respawnHealthValue: 0.0
-# health penalized player will respawn with
-# if value <= 0 percentage value is used instead
+apply-penalties-from-death-world: true
+# apply the penalties in the world the player died
+# otherwise penalties from the world the players respawns in will be applied
 
-respawnFoodValue: 0.0
-# food penalized player will respawn with
-# if value <= 0 percentage value is used instead
+effects-duration-format-in-seconds: true
+# duration in effects formatting is in seconds instead of ticks
 
-respawnHealthPercentage: 0.2
-# health penalized player will respawn with in percentage (0.21 is 21 percents)
-# warning this value is ignored if you have set a health value > 0
+effects-level-format-true-level: true
+# level in effects formatting is entered level instead of starting from 0
 
-respawnFoodPercentage: 0.4
-# food penalized player will respawn with in percentage (0.41 is 41 percents)
-# warning this value is ignored if you have set a food value > 0
+##### PER WORLD CONFIGURATION VALUES #####
 
-effectsDurationFormatInSeconds: true
-# duration in effects formatting is in seconds
+# you can add worlds here to set per world custom values
+# if a world is not added here default values will be used instead
+# if an option is missing it will be set to its default value
+# be careful to respect the format otherwise the plugin will ignore it
 
-effectsLevelFormatTrueLevel: true
-# level in effects formatting is entered level (not starting from 0)
+#example_world:
+#  enabled: true
+#  # if enabled death penalties will be applied
+#  respawn-flat-health-value: 0.0
+#  # health penalized player will respawn with
+#  # if value <= 0 percentage value is used instead
+#  respawn-flat-food-value: 0
+#  # food penalized player will respawn with (integer numbers)
+#  # if value <= 0 percentage value is used instead
+#  respawn-health-percentage: 0.4
+#  # health penalized player will respawn with in percentage (0.21 is 21 percents)
+#  # warning this value is ignored if you have set a flat health value > 0
+#  respawn-food-percentage: 0.4
+#  # food penalized player will respawn with in percentage (0.41 is 41 percents)
+#  # warning this value is ignored if you have set a flat food value > 0
+#  respawn-effects:
+#    - SLOWNESS:30:1:false
+#    - SLOW_DIGGING:60:1:false
+#    - WEAKNESS:120:2:false
+#  # effects format is EFFECT_NAME:DURATION:LEVEL:SHOW_PARTICLES
+#  # list of all effects names available here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html
 
-# effects format is EFFECT_NAME:DURATION:LEVEL:SHOW_PARTICLES
-# list of all effects names available here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html
-effects:
-  - SLOWNESS:30:2:false
-  - WEAKNESS:120:2:false
+# values below are examples of use and for testing purpose
+
+default_values:
+  enabled: true
+  respawn-health-percentage: 0.5
+  respawn-food-flat: 16
+  respawn-effects:
+    - SLOW:30:1:false
+    - SLOW_DIGGING:60:1:false
+    - WEAKNESS:120:2:false
+world_nether:
+  enabled: true
+  respawn-health-flat: 4
+  respawn-food-percentage: 0.5
+  respawn-effects:
+    - SLOW:60:2:false
+    - SLOW_DIGGING:90:2:false
+    - WEAKNESS:180:3:false
+world_the_end:
+  enabled: true
+  respawn-food-flat: 2
+  respawn-health-percentage: 0.05
+  respawn-effects:
+    - SLOW:100:2:false
+    - SLOW_DIGGING:150:3:false
+    - WEAKNESS:200:4:false
+world_creative:
+  enabled: false
