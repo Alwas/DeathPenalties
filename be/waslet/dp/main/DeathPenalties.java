@@ -1,7 +1,9 @@
 package be.waslet.dp.main;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Hashtable;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -10,9 +12,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+
+import com.onarandombox.MultiverseCore.MultiverseCore;
+import com.onarandombox.MultiverseCore.api.MultiverseWorld;
 
 import be.waslet.dp.commands.DeathPenaltiesEditCommand;
 import be.waslet.dp.commands.DeathPenaltiesStateCommand;
@@ -34,9 +40,21 @@ public class DeathPenalties extends JavaPlugin implements Listener
 		// load default values
 		DeathPenaltiesWorld defaultValues = loadDefaultValues(durationInSeconds, trueLevel);
 		// load all worlds custom values or set it to default
-		for (World world : getServer().getWorlds())
+		Plugin multiverse = getServer().getPluginManager().getPlugin("Multiverse-Core");
+		getServer().getLogger().log(Level.INFO, "[" + getName() + "] Loading all worlds");
+		if (multiverse == null || !(multiverse instanceof MultiverseCore))
 		{
-			loadWorldConfiguration(world.getName(), defaultValues, durationInSeconds, trueLevel);
+			loadWorlds(getServer().getWorlds(), defaultValues, durationInSeconds, trueLevel);
+		}
+		else
+		{
+			getServer().getLogger().log(Level.INFO, "[" + getName() + "] Multiverse detected looking for mv worlds");
+			Collection<String> worlds = new LinkedList<String>();
+			for (MultiverseWorld world : ((MultiverseCore) multiverse).getCore().getMVWorldManager().getMVWorlds())
+			{
+				worlds.add(world.getName());
+			}
+			loadWorldsByName(worlds, defaultValues, durationInSeconds, trueLevel);
 		}
 		// commands executors
 		getCommand("dpstate").setExecutor(new DeathPenaltiesStateCommand());
@@ -45,6 +63,29 @@ public class DeathPenalties extends JavaPlugin implements Listener
 		getServer().getPluginManager().registerEvents(this, this);
 	}
 
+	/**
+	 * Load all worlds
+	 * @param worlds List of all worlds
+	 * @param defaultValues Default world values
+	 * @param durationInSeconds
+	 * @param trueLevel
+	 */
+	public void loadWorldsByName (Collection<String> worlds, DeathPenaltiesWorld defaultValues, boolean durationInSeconds, boolean trueLevel)
+	{
+		for (String world : worlds)
+		{
+			loadWorldConfiguration(world, defaultValues, durationInSeconds, trueLevel);
+		}
+	}
+	
+	public void loadWorlds (Collection<World> worlds, DeathPenaltiesWorld defaultValues, boolean durationInSeconds, boolean trueLevel)
+	{
+		for (World world : worlds)
+		{
+			loadWorldConfiguration(world.getName(), defaultValues, durationInSeconds, trueLevel);
+		}
+	}
+	
 	@EventHandler (priority = EventPriority.NORMAL)
 	public void onPlayerRespawn (PlayerRespawnEvent event)
 	{
@@ -65,11 +106,13 @@ public class DeathPenalties extends JavaPlugin implements Listener
 	{
 		// check if value if is config and save it or default if not found
 		boolean enabled = (getConfig().contains(worldName + "." + DeathPenaltiesOption.ENABLED.getConfigPath())) ? getConfig().getBoolean(worldName + "." + DeathPenaltiesOption.ENABLED.getConfigPath(), false) : defaultValues.isEnabled();
-		double respawnHealthPercentage = (getConfig().contains(worldName + "." + DeathPenaltiesOption.HEALTH_PERCENTAGE.getConfigPath())) ? getConfig().getDouble(worldName + "." + DeathPenaltiesOption.HEALTH_PERCENTAGE.getConfigPath()) : defaultValues.getRespawnHealthPercentage();
-		double respawnFoodPercentage = (getConfig().contains(worldName + "." + DeathPenaltiesOption.FOOD_PERCENTAGE.getConfigPath())) ? getConfig().getDouble(worldName + "." + DeathPenaltiesOption.FOOD_PERCENTAGE.getConfigPath()) : defaultValues.getRespawnFoodPercentage();
+		double respawnHealthPercentage = (getConfig().contains(worldName + "." + DeathPenaltiesOption.HEALTH_PERCENTAGE.getConfigPath())) ? getConfig().getDouble(worldName + "." + DeathPenaltiesOption.HEALTH_PERCENTAGE.getConfigPath()) : 0.0;
+		double respawnFoodPercentage = (getConfig().contains(worldName + "." + DeathPenaltiesOption.FOOD_PERCENTAGE.getConfigPath())) ? getConfig().getDouble(worldName + "." + DeathPenaltiesOption.FOOD_PERCENTAGE.getConfigPath()) : 0.0;
 		// check config and check if has percentage value set (must ignore default and set 0 then to avoid using default flat)
 		double respawnHealthFlat = (respawnHealthPercentage <= 0) ? (getConfig().contains(worldName + "." + DeathPenaltiesOption.HEALTH_FLAT.getConfigPath())) ? getConfig().getDouble(worldName + "." + DeathPenaltiesOption.HEALTH_FLAT.getConfigPath()) : defaultValues.getRespawnHealthFlat() : 0.0;
 		int respawnFoodFlat = (respawnFoodPercentage <= 0) ? (getConfig().contains(worldName + "." + DeathPenaltiesOption.FOOD_FLAT.getConfigPath())) ? getConfig().getInt(worldName + "." + DeathPenaltiesOption.FOOD_FLAT.getConfigPath()) : defaultValues.getRespawnFoodFlat() : 0;
+		respawnHealthPercentage = (respawnHealthFlat <= 0 && respawnHealthPercentage <= 0) ? defaultValues.getRespawnHealthPercentage() : respawnHealthPercentage;
+		respawnFoodPercentage = (respawnFoodFlat <= 0 && respawnFoodPercentage <= 0) ? defaultValues.getRespawnFoodPercentage() : respawnFoodPercentage;
 		PotionEffect[] respawnEffects = (getConfig().contains(worldName + "." + DeathPenaltiesOption.EFFECTS.getConfigPath())) ? getParsedPotionsEffects(getConfig().getStringList(worldName + "." + DeathPenaltiesOption.EFFECTS.getConfigPath()), durationInSeconds, trueLevel) : defaultValues.getRespawnEffects();
 		deathPenaltiesWorlds.put(worldName, new DeathPenaltiesWorld(enabled, respawnHealthFlat, respawnFoodFlat, respawnHealthPercentage, respawnFoodPercentage, respawnEffects));
 	}
