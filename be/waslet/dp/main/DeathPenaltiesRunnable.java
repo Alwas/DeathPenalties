@@ -30,37 +30,22 @@ public class DeathPenaltiesRunnable extends BukkitRunnable
 	@Override
 	public void run ()
 	{
-		// if flat value is disabled use percentage
+		// if flat value is disabled use percentage and only set value if we have a valid percentage
 		if (world.getRespawnHealthFlat() <= 0)
 		{
-			// only set value if we have a valid percentage
 			if (world.getRespawnHealthPercentage() <= 1 && world.getRespawnHealthPercentage() > 0) player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * world.getRespawnHealthPercentage());
 		}
-		else
-		{
-			// updating player with flat value
-			player.setHealth(world.getRespawnHealthFlat());
-		}
-		// if flat value is disabled use percentage
+		// else updating player with flat value
+		else player.setHealth(world.getRespawnHealthFlat());
+		// same for food
 		if (world.getRespawnFoodFlat() <= 0)
 		{
-			// only set value if we have a valid percentage
 			if (world.getRespawnFoodPercentage() <= 1 && world.getRespawnFoodPercentage() > 0) player.setFoodLevel((int) (FOOD_LEVEL_MAX_VALUE * world.getRespawnFoodPercentage()));
 		}
-		else
-		{
-			// updating player with flat value
-			player.setFoodLevel(world.getRespawnFoodFlat());
-		}
+		else player.setFoodLevel(world.getRespawnFoodFlat());
 		// apply all potions effects
 		if (world.getRespawnEffects() != null)
-		for (PotionEffect potionEffect : world.getRespawnEffects())
-		{
-			if (potionEffect != null)
-			{
-				player.addPotionEffect(potionEffect);
-			}
-		}
+		for (PotionEffect potionEffect : world.getRespawnEffects()) if (potionEffect != null) player.addPotionEffect(potionEffect);
 	}
 	
 }

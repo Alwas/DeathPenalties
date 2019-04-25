@@ -8,17 +8,25 @@ public class DeathPenaltiesWorld
 	private boolean enabled;
 	private double respawnHealthFlat;
 	private int respawnFoodFlat;
+	private double respawnMoneyLostFlat;
+	private int respawnItemsLostFlat;
 	private double respawnHealthPercentage;
 	private double respawnFoodPercentage;
+	private double respawnMoneyLostPercentage;
+	private double respawnItemsLostPercentage;
 	private PotionEffect[] respawnEffects;
 
-	public DeathPenaltiesWorld (boolean enabled, double respawnHealthFlat, int respawnFoodFlat, double respawnHealthPercentage, double respawnFoodPercentage, PotionEffect[] respawnEffects)
+	public DeathPenaltiesWorld (boolean enabled, double respawnHealthFlat, int respawnFoodFlat, double respawnMoneyLostFlat, int respawnItemsLostFlat, double respawnHealthPercentage, double respawnFoodPercentage, double respawnMoneyLostPercentage, double respawnItemsLostPercentage, PotionEffect[] respawnEffects)
 	{
 		this.enabled = enabled;
 		this.respawnHealthFlat = respawnHealthFlat;
 		this.respawnFoodFlat = respawnFoodFlat;
+		this.respawnMoneyLostFlat = respawnMoneyLostFlat;
+		this.respawnItemsLostFlat = respawnItemsLostFlat;
 		this.respawnHealthPercentage = respawnHealthPercentage;
 		this.respawnFoodPercentage = respawnFoodPercentage;
+		this.respawnMoneyLostPercentage = respawnMoneyLostPercentage;
+		this.respawnItemsLostPercentage = respawnItemsLostPercentage;
 		this.respawnEffects = respawnEffects;
 	}
 
@@ -37,6 +45,16 @@ public class DeathPenaltiesWorld
 		return respawnFoodFlat;
 	}
 
+	public double getRespawnMoneyLostFlat ()
+	{
+		return respawnMoneyLostFlat;
+	}
+	
+	public int getRespawnItemsLostFlat ()
+	{
+		return respawnItemsLostFlat;
+	}
+	
 	public double getRespawnHealthPercentage ()
 	{
 		return respawnHealthPercentage;
@@ -47,6 +65,16 @@ public class DeathPenaltiesWorld
 		return respawnFoodPercentage;
 	}
 
+	public double getRespawnMoneyLostPercentage ()
+	{
+		return respawnMoneyLostPercentage;
+	}
+	
+	public double getRespawnItemsLostPercentage ()
+	{
+		return respawnItemsLostPercentage;
+	}
+	
 	public PotionEffect[] getRespawnEffects ()
 	{
 		return respawnEffects;
@@ -67,6 +95,16 @@ public class DeathPenaltiesWorld
 		this.respawnFoodFlat = respawnFoodFlat;
 	}
 
+	public void setRespawnMoneyLostFlat (double respawnMoneyLostFlat)
+	{
+		this.respawnMoneyLostFlat = respawnMoneyLostFlat;
+	}
+	
+	public void setRespawnItemsLostFlat (int respawnItemsLostFlat)
+	{
+		this.respawnItemsLostFlat = respawnItemsLostFlat;
+	}
+	
 	public void setRespawnHealthPercentage (double respawnHealthPercentage)
 	{
 		this.respawnHealthPercentage = respawnHealthPercentage;
@@ -77,6 +115,16 @@ public class DeathPenaltiesWorld
 		this.respawnFoodPercentage = respawnFoodPercentage;
 	}
 
+	public void setRespawnMoneyLostPercentage (double respawnMoneyLostPercentage)
+	{
+		this.respawnMoneyLostPercentage = respawnMoneyLostPercentage;
+	}
+	
+	public void setRespawnItemsLostPercentage (double respawnItemsLostPercentage)
+	{
+		this.respawnItemsLostPercentage = respawnItemsLostPercentage;
+	}
+	
 	public void setRespawnEffects (PotionEffect[] respawnEffects)
 	{
 		this.respawnEffects = respawnEffects;
@@ -84,7 +132,7 @@ public class DeathPenaltiesWorld
 	
 	public DeathPenaltiesWorld getCopy ()
 	{
-		return new DeathPenaltiesWorld(this.enabled, this.respawnHealthFlat, this.respawnFoodFlat, this.respawnHealthPercentage, this.respawnFoodPercentage, this.respawnEffects);
+		return new DeathPenaltiesWorld(this.enabled, this.respawnHealthFlat, this.respawnFoodFlat, this.respawnMoneyLostFlat, this.respawnItemsLostFlat, this.respawnHealthPercentage, this.respawnFoodPercentage, this.respawnMoneyLostPercentage, this.respawnItemsLostPercentage, this.respawnEffects);
 	}
 
 }

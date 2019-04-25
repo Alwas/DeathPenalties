@@ -3,10 +3,6 @@
 
 ##### GENERAL CONFIGURATION VALUES #####
 
-apply-penalties-from-death-world: true
-# apply the penalties in the world the player died
-# otherwise penalties from the world the players respawns in will be applied
-
 effects-duration-format-in-seconds: true
 # duration in effects formatting is in seconds instead of ticks
 
@@ -23,18 +19,30 @@ effects-level-format-true-level: true
 #example_world:
 #  enabled: true
 #  # if enabled death penalties will be applied
-#  respawn-flat-health-value: 0.0
+#  respawn-health-flat: 0.0
 #  # health penalized player will respawn with
 #  # if value <= 0 percentage value is used instead
-#  respawn-flat-food-value: 0
+#  respawn-food-flat: 0
 #  # food penalized player will respawn with (integer numbers)
 #  # if value <= 0 percentage value is used instead
-#  respawn-health-percentage: 0.4
+#  respawn-money-lost-flat: 10.0
+#  # money penalized player will lose on respawn
+#  # if value <= 0 percentage value is used instead
+#  respawn-items-lost-flat: 1
+#  # items penalized player will lose on respawn
+#  # if value <= 0 percentage value is used instead
+#  respawn-health-percentage: 0.21
 #  # health penalized player will respawn with in percentage (0.21 is 21 percents)
 #  # warning this value is ignored if you have set a flat health value > 0
 #  respawn-food-percentage: 0.4
-#  # food penalized player will respawn with in percentage (0.41 is 41 percents)
+#  # food penalized player will respawn with in percentage
 #  # warning this value is ignored if you have set a flat food value > 0
+#  respawn-money-lost-percentage: 0.01
+#  # money penalized player will lose on respawn in percentage
+#  # warning this value is ignored if you have set a flat money lost value > 0
+#  respawn-items-lost-percentage: 0.05
+#  # items penalized player will lose on respawn in percentage
+#  # warning this value is ignored if you have set a flat items lost value > 0
 #  respawn-effects:
 #    - SLOWNESS:30:1:false
 #    - SLOW_DIGGING:60:1:false
@@ -42,12 +50,14 @@ effects-level-format-true-level: true
 #  # effects format is EFFECT_NAME:DURATION:LEVEL:SHOW_PARTICLES
 #  # list of all effects names available here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html
 
-# values below are examples of use and for testing purpose
+# values below are examples of use and for testing purpose replace it by your own values !
 
 default_values:
   enabled: true
   respawn-health-percentage: 0.5
   respawn-food-flat: 16
+  respawn-money-lost-flat: 10
+  respawn-items-lost-flat: 0
   respawn-effects:
     - SLOW:30:1:false
     - SLOW_DIGGING:60:1:false
@@ -56,6 +66,8 @@ world_nether:
   enabled: true
   respawn-health-flat: 4
   respawn-food-percentage: 0.5
+  respawn-money-lost-percentage: 0.01
+  respawn-items-lost-percentage: 0.0
   respawn-effects:
     - SLOW:60:2:false
     - SLOW_DIGGING:90:2:false
