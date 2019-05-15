@@ -2,42 +2,36 @@ package be.waslet.dp.main;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.potion.PotionEffect;
 
 public class DeathPenaltiesConfig
 {
 
 	private DeathPenalties plugin;
+	private FileConfiguration mainConfig;
 	private FileConfiguration translationsConfig;
 	
 	public DeathPenaltiesConfig (DeathPenalties plugin)
 	{
 		this.plugin = plugin;
-		plugin.saveDefaultConfig();
 		File directory = plugin.getDataFolder();
 		if (!directory.exists()) directory.mkdirs();
-		File file = new File(directory, "translations.yml");
-		if (!file.exists())
-		{
-			try
-			{
-				file.createNewFile();
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
-		}
-		translationsConfig = new YamlConfiguration();
+		File mainFile = new File(directory, "config.yml");
+		File translationsFile = new File(directory, "translations.yml");
+		this.mainConfig = new YamlConfiguration();
+		this.translationsConfig = new YamlConfiguration();
+		if (!mainFile.exists()) plugin.saveResource("config.yml", false);
+		if (!translationsFile.exists()) plugin.saveResource("translations.yml", false);
 		try
 		{
-			translationsConfig.load(file);
+			this.mainConfig.load(mainFile);
+			this.translationsConfig.load(translationsFile);
 		}
 		catch (IOException e)
 		{
@@ -54,16 +48,6 @@ public class DeathPenaltiesConfig
 		return null;
 	}
 	
-	public boolean getPotionEffectsInSeconds ()
-	{
-		return plugin.getConfig().getBoolean(DeathPenaltiesOption.EFFECT_FORMAT_SECONDS.getConfigPath());
-	}
-	
-	public boolean getPotionEffectsTrueLevel ()
-	{
-		return plugin.getConfig().getBoolean(DeathPenaltiesOption.EFFECT_FORMAT_LEVELS.getConfigPath());
-	}
-	
 	/**
 	 * Set a world penalty value in the config and save it
 	 * @param worldName The world name the value has to be changed
@@ -72,84 +56,109 @@ public class DeathPenaltiesConfig
 	 */
 	public void setWorldValue (String worldName, DeathPenaltiesOption option, Object value)
 	{
-		plugin.getConfig().set(worldName + "." + option.getConfigPath(), value);
-		plugin.saveConfig();
+		this.mainConfig.set(worldName + "." + option.getConfigPath(), value);
+		this.plugin.saveConfig();
 	}
 
-	public void setWorldEffectsValue (String worldName, String[] value)
-	{
-		plugin.getConfig().set(worldName + "." + DeathPenaltiesOption.EFFECTS.getConfigPath(), value);
-		plugin.saveConfig();
-	}
-	
 	/**
 	 * Load in plugin memory death penalties values of a world from config
 	 * @param worldName Name of the world values to load
 	 * @param durationInSeconds Effects formatting
 	 * @param trueLevel Effects formatting
 	 */
-	public void loadWorldConfiguration (String worldName, DeathPenaltiesWorld defaultValues, boolean durationInSeconds, boolean trueLevel)
+	public void loadWorldConfiguration (String worldName, DeathPenaltiesWorld defaultValues)
 	{
+		String worldNamePath = worldName + ".";
 		// check if value if is config and save it or default if not found
-		boolean enabled = (plugin.getConfig().contains(worldName + "." + DeathPenaltiesOption.ENABLED.getConfigPath())) ? plugin.getConfig().getBoolean(worldName + "." + DeathPenaltiesOption.ENABLED.getConfigPath(), false) : defaultValues.isEnabled();
-		double respawnHealthPercentage = (plugin.getConfig().contains(worldName + "." + DeathPenaltiesOption.HEALTH_PERCENTAGE.getConfigPath())) ? plugin.getConfig().getDouble(worldName + "." + DeathPenaltiesOption.HEALTH_PERCENTAGE.getConfigPath()) : 0.0;
-		double respawnFoodPercentage = (plugin.getConfig().contains(worldName + "." + DeathPenaltiesOption.FOOD_PERCENTAGE.getConfigPath())) ? plugin.getConfig().getDouble(worldName + "." + DeathPenaltiesOption.FOOD_PERCENTAGE.getConfigPath()) : 0.0;
-		double respawnMoneyLostPercentage = (plugin.getConfig().contains(worldName + "." + DeathPenaltiesOption.MONEY_LOST_PERCENTAGE.getConfigPath())) ? plugin.getConfig().getDouble(worldName + "." + DeathPenaltiesOption.MONEY_LOST_PERCENTAGE.getConfigPath()) : 0.0;
-		double respawnItemsLostPercentage = (plugin.getConfig().contains(worldName + "." + DeathPenaltiesOption.ITEMS_LOST_PERCENTAGE.getConfigPath())) ? plugin.getConfig().getDouble(worldName + "." + DeathPenaltiesOption.ITEMS_LOST_PERCENTAGE.getConfigPath()) : 0.0;
+		boolean enabled = (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.ENABLED.getConfigPath())) ? this.mainConfig.getBoolean(worldNamePath + DeathPenaltiesOption.ENABLED.getConfigPath(), false) : defaultValues.isEnabled();
+		double respawnHealthPercentage = (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.HEALTH_PERCENTAGE.getConfigPath())) ? this.mainConfig.getDouble(worldNamePath + DeathPenaltiesOption.HEALTH_PERCENTAGE.getConfigPath()) : 0.0;
+		double respawnFoodPercentage = (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.FOOD_PERCENTAGE.getConfigPath())) ? this.mainConfig.getDouble(worldNamePath + DeathPenaltiesOption.FOOD_PERCENTAGE.getConfigPath()) : 0.0;
+		double deathMoneyLostPercentage = (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.MONEY_LOST_PERCENTAGE.getConfigPath())) ? this.mainConfig.getDouble(worldNamePath + DeathPenaltiesOption.MONEY_LOST_PERCENTAGE.getConfigPath()) : 0.0;
+		double deathItemsDroppedPercentage = (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.ITEMS_DROPPED_PERCENTAGE.getConfigPath())) ? this.mainConfig.getDouble(worldNamePath + DeathPenaltiesOption.ITEMS_DROPPED_PERCENTAGE.getConfigPath()) : 0.0;
+		double deathItemsDestroyedPercentage = (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.ITEMS_DESTROYED_PERCENTAGE.getConfigPath())) ? this.mainConfig.getDouble(worldNamePath + DeathPenaltiesOption.ITEMS_DESTROYED_PERCENTAGE.getConfigPath()) : 0.0;
 		// check config and check if has percentage value set (must ignore default and set 0 then to avoid using default flat)
-		double respawnHealthFlat = (respawnHealthPercentage <= 0) ? (plugin.getConfig().contains(worldName + "." + DeathPenaltiesOption.HEALTH_FLAT.getConfigPath())) ? plugin.getConfig().getDouble(worldName + "." + DeathPenaltiesOption.HEALTH_FLAT.getConfigPath()) : defaultValues.getRespawnHealthFlat() : 0.0;
-		int respawnFoodFlat = (respawnFoodPercentage <= 0) ? (plugin.getConfig().contains(worldName + "." + DeathPenaltiesOption.FOOD_FLAT.getConfigPath())) ? plugin.getConfig().getInt(worldName + "." + DeathPenaltiesOption.FOOD_FLAT.getConfigPath()) : defaultValues.getRespawnFoodFlat() : 0;
-		double respawnMoneyLostFlat = (respawnMoneyLostPercentage <= 0) ? (plugin.getConfig().contains(worldName + "." + DeathPenaltiesOption.MONEY_LOST_FLAT.getConfigPath())) ? plugin.getConfig().getDouble(worldName + "." + DeathPenaltiesOption.MONEY_LOST_FLAT.getConfigPath()) : defaultValues.getRespawnMoneyLostFlat() : 0.0;
-		int respawnItemsLostFlat = (respawnItemsLostPercentage <= 0) ? (plugin.getConfig().contains(worldName + "." + DeathPenaltiesOption.ITEMS_LOST_FLAT.getConfigPath())) ? plugin.getConfig().getInt(worldName + "." + DeathPenaltiesOption.ITEMS_LOST_FLAT.getConfigPath()) : defaultValues.getRespawnItemsLostFlat() : 0;
+		double respawnHealthFlat = (respawnHealthPercentage <= 0) ? (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.HEALTH_FLAT.getConfigPath())) ? this.mainConfig.getDouble(worldNamePath + DeathPenaltiesOption.HEALTH_FLAT.getConfigPath()) : defaultValues.getRespawnHealthFlat() : 0.0;
+		int respawnFoodFlat = (respawnFoodPercentage <= 0) ? (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.FOOD_FLAT.getConfigPath())) ? this.mainConfig.getInt(worldNamePath + DeathPenaltiesOption.FOOD_FLAT.getConfigPath()) : defaultValues.getRespawnFoodFlat() : 0;
+		double deathMoneyLostFlat = (deathMoneyLostPercentage <= 0) ? (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.MONEY_LOST_FLAT.getConfigPath())) ? this.mainConfig.getDouble(worldNamePath + DeathPenaltiesOption.MONEY_LOST_FLAT.getConfigPath()) : defaultValues.getDeathMoneyLostFlat() : 0.0;
+		int deathItemsDroppedFlat = (deathItemsDroppedPercentage <= 0) ? (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.ITEMS_DROPPED_FLAT.getConfigPath())) ? this.mainConfig.getInt(worldNamePath + DeathPenaltiesOption.ITEMS_DROPPED_FLAT.getConfigPath()) : defaultValues.getDeathItemsDroppedFlat() : 0;
+		int deathItemsDestroyedFlat = (deathItemsDestroyedPercentage <= 0) ? (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.ITEMS_DESTROYED_FLAT.getConfigPath())) ? this.mainConfig.getInt(worldNamePath + DeathPenaltiesOption.ITEMS_DESTROYED_FLAT.getConfigPath()) : defaultValues.getDeathItemsDestroyedFlat() : 0;
 		respawnHealthPercentage = (respawnHealthFlat <= 0 && respawnHealthPercentage <= 0) ? defaultValues.getRespawnHealthPercentage() : respawnHealthPercentage;
 		respawnFoodPercentage = (respawnFoodFlat <= 0 && respawnFoodPercentage <= 0) ? defaultValues.getRespawnFoodPercentage() : respawnFoodPercentage;
-		respawnMoneyLostPercentage = (respawnMoneyLostFlat <= 0 && respawnMoneyLostPercentage <= 0) ? defaultValues.getRespawnMoneyLostPercentage() : respawnMoneyLostPercentage;
-		respawnItemsLostPercentage = (respawnItemsLostFlat <= 0 && respawnItemsLostPercentage <= 0) ? defaultValues.getRespawnItemsLostPercentage() : respawnItemsLostPercentage;
-		List<String> potionEffects = plugin.getConfig().getStringList(worldName + "." + DeathPenaltiesOption.EFFECTS.getConfigPath());
-		PotionEffect[] respawnEffects = defaultValues.getRespawnEffects();
-		if (plugin.getConfig().contains(worldName + "." + DeathPenaltiesOption.EFFECTS.getConfigPath()))
+		deathMoneyLostPercentage = (deathMoneyLostFlat <= 0 && deathMoneyLostPercentage <= 0) ? defaultValues.getDeathMoneyLostPercentage() : deathMoneyLostPercentage;
+		deathItemsDroppedPercentage = (deathItemsDroppedFlat <= 0 && deathItemsDroppedPercentage <= 0) ? defaultValues.getDeathItemsDroppedPercentage() : deathItemsDroppedPercentage;
+		deathItemsDestroyedPercentage = (deathItemsDestroyedFlat <= 0 && deathItemsDestroyedPercentage <= 0) ? defaultValues.getDeathItemsDestroyedPercentage() : deathItemsDestroyedPercentage;
+		Material[] whitelistedItems = defaultValues.getWhitelistedItems();
+		if (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.WHITELISTED_ITEMS.getConfigPath()))
 		{
-			try
+			List<String> whitelistedItemsList = this.mainConfig.getStringList(worldNamePath + DeathPenaltiesOption.WHITELISTED_ITEMS.getConfigPath());
+			whitelistedItems = new Material[whitelistedItemsList.size()];
+			int position = 0;
+			for (String next : whitelistedItemsList)
 			{
-				respawnEffects = plugin.getParser().getParsedPotionsEffects(potionEffects.toArray(new String[potionEffects.size()]), durationInSeconds, trueLevel);
-			}
-			catch (DeathPenaltiesParserException exc)
-			{
-				plugin.getServer().getLogger().log(Level.INFO, "[" + plugin.getName() + "] " + exc.getMessage());
+				try
+				{
+					whitelistedItems[position++] = Material.valueOf(next);
+				}
+				catch (IllegalArgumentException exc)
+				{
+					continue;
+				}
 			}
 		}
-		plugin.setDeathPenaltiesWorld(worldName, new DeathPenaltiesWorld(enabled, respawnHealthFlat, respawnFoodFlat, respawnMoneyLostFlat, respawnItemsLostFlat, respawnHealthPercentage, respawnFoodPercentage, respawnMoneyLostPercentage, respawnItemsLostPercentage, respawnEffects));
+		String[] respawnProcessedCommands = defaultValues.getRespawnProcessedCommands();
+		if (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.RESPAWN_PROCESSED_COMMANDS.getConfigPath()))
+		{
+			List<String> respawnProcessedCommandsList = this.mainConfig.getStringList(worldNamePath + DeathPenaltiesOption.RESPAWN_PROCESSED_COMMANDS.getConfigPath());
+			respawnProcessedCommands = respawnProcessedCommandsList.toArray(new String[respawnProcessedCommandsList.size()]);
+		}
+		String[] deathProcessedCommands = defaultValues.getDeathProcessedCommands();
+		if (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.DEATH_PROCESSED_COMMANDS.getConfigPath()))
+		{
+			List<String> deathProcessedCommandsList = this.mainConfig.getStringList(worldNamePath + DeathPenaltiesOption.DEATH_PROCESSED_COMMANDS.getConfigPath());
+			deathProcessedCommands = deathProcessedCommandsList.toArray(new String[deathProcessedCommandsList.size()]);
+		}
+		this.plugin.setDeathPenaltiesWorld(worldName, new DeathPenaltiesWorld(enabled, respawnHealthFlat, respawnFoodFlat, deathMoneyLostFlat, deathItemsDroppedFlat, deathItemsDestroyedFlat, respawnHealthPercentage, respawnFoodPercentage, deathMoneyLostPercentage, deathItemsDroppedPercentage, deathItemsDestroyedPercentage, whitelistedItems, respawnProcessedCommands, deathProcessedCommands));
 	}
-
+	
 	/**
 	 * Load in plugin memory death penalties default values from config
 	 * @param durationInSeconds Effects formatting
 	 * @param trueLevel Effects formatting
 	 */
-	public DeathPenaltiesWorld loadDefaultValues (boolean durationInSeconds, boolean trueLevel)
+	public DeathPenaltiesWorld loadDefaultValues ()
 	{
 		// check for each value if default values are set in config otherwise set non used values
-		boolean enabled = plugin.getConfig().getBoolean("default_values." + DeathPenaltiesOption.ENABLED.getConfigPath(), false);
-		double respawnHealthPercentage = plugin.getConfig().getDouble("default_values." + DeathPenaltiesOption.HEALTH_PERCENTAGE.getConfigPath(), 0.0);
-		double respawnFoodPercentage = plugin.getConfig().getDouble("default_values." + DeathPenaltiesOption.FOOD_PERCENTAGE.getConfigPath(), 0.0);
-		double respawnMoneyLostPercentage = plugin.getConfig().getDouble("default_values." + DeathPenaltiesOption.MONEY_LOST_PERCENTAGE.getConfigPath(), 0.0);
-		double respawnItemsLostPercentage = plugin.getConfig().getDouble("default_values." + DeathPenaltiesOption.ITEMS_LOST_PERCENTAGE.getConfigPath(), 0.0);
-		double respawnHealthFlat = (respawnHealthPercentage <= 0) ? (plugin.getConfig().contains("default_values." + DeathPenaltiesOption.HEALTH_FLAT.getConfigPath())) ? plugin.getConfig().getDouble("default_values." + DeathPenaltiesOption.HEALTH_FLAT.getConfigPath()) : 0.0 : 0.0;
-		int respawnFoodFlat = (respawnFoodPercentage <= 0) ? (plugin.getConfig().contains("default_values." + DeathPenaltiesOption.FOOD_FLAT.getConfigPath())) ? plugin.getConfig().getInt("default_values." + DeathPenaltiesOption.FOOD_FLAT.getConfigPath()) : 0 : 0;
-		double respawnMoneyLostFlat = (respawnMoneyLostPercentage <= 0) ? (plugin.getConfig().contains("default_values." + DeathPenaltiesOption.MONEY_LOST_FLAT.getConfigPath())) ? plugin.getConfig().getDouble("default_values." + DeathPenaltiesOption.MONEY_LOST_FLAT.getConfigPath()) : 0.0 : 0.0;
-		int respawnItemsLostFlat = (respawnItemsLostPercentage <= 0) ? (plugin.getConfig().contains("default_values." + DeathPenaltiesOption.ITEMS_LOST_FLAT.getConfigPath())) ? plugin.getConfig().getInt("default_values." + DeathPenaltiesOption.ITEMS_LOST_FLAT.getConfigPath()) : 0 : 0;
-		List<String> potionEffects = plugin.getConfig().getStringList("default_values." + DeathPenaltiesOption.EFFECTS.getConfigPath());
-		PotionEffect[] respawnEffects = new PotionEffect[0];
-		try
+		boolean enabled = this.mainConfig.getBoolean("default_values." + DeathPenaltiesOption.ENABLED.getConfigPath(), false);
+		double respawnHealthPercentage = this.mainConfig.getDouble("default_values." + DeathPenaltiesOption.HEALTH_PERCENTAGE.getConfigPath(), 0.0);
+		double respawnFoodPercentage = this.mainConfig.getDouble("default_values." + DeathPenaltiesOption.FOOD_PERCENTAGE.getConfigPath(), 0.0);
+		double deathMoneyLostPercentage = this.mainConfig.getDouble("default_values." + DeathPenaltiesOption.MONEY_LOST_PERCENTAGE.getConfigPath(), 0.0);
+		double deathItemsDroppedPercentage = this.mainConfig.getDouble("default_values." + DeathPenaltiesOption.ITEMS_DROPPED_PERCENTAGE.getConfigPath(), 0.0);
+		double deathItemsDestroyedPercentage = this.mainConfig.getDouble("default_values." + DeathPenaltiesOption.ITEMS_DESTROYED_PERCENTAGE.getConfigPath(), 0.0);
+		double respawnHealthFlat = (respawnHealthPercentage <= 0) ? (this.mainConfig.contains("default_values." + DeathPenaltiesOption.HEALTH_FLAT.getConfigPath())) ? this.mainConfig.getDouble("default_values." + DeathPenaltiesOption.HEALTH_FLAT.getConfigPath()) : 0.0 : 0.0;
+		int respawnFoodFlat = (respawnFoodPercentage <= 0) ? (this.mainConfig.contains("default_values." + DeathPenaltiesOption.FOOD_FLAT.getConfigPath())) ? this.mainConfig.getInt("default_values." + DeathPenaltiesOption.FOOD_FLAT.getConfigPath()) : 0 : 0;
+		double deathMoneyLostFlat = (deathMoneyLostPercentage <= 0) ? (this.mainConfig.contains("default_values." + DeathPenaltiesOption.MONEY_LOST_FLAT.getConfigPath())) ? this.mainConfig.getDouble("default_values." + DeathPenaltiesOption.MONEY_LOST_FLAT.getConfigPath()) : 0.0 : 0.0;
+		int deathItemsDroppedFlat = (deathItemsDroppedPercentage <= 0) ? (this.mainConfig.contains("default_values." + DeathPenaltiesOption.ITEMS_DROPPED_FLAT.getConfigPath())) ? this.mainConfig.getInt("default_values." + DeathPenaltiesOption.ITEMS_DROPPED_FLAT.getConfigPath()) : 0 : 0;
+		int deathItemsDestroyedFlat = (deathItemsDestroyedPercentage <= 0) ? (this.mainConfig.contains("default_values." + DeathPenaltiesOption.ITEMS_DESTROYED_FLAT.getConfigPath())) ? this.mainConfig.getInt("default_values." + DeathPenaltiesOption.ITEMS_DESTROYED_FLAT.getConfigPath()) : 0 : 0;
+		List<String> whitelistedItemsList = (this.mainConfig.contains("default_values." + DeathPenaltiesOption.WHITELISTED_ITEMS.getConfigPath())) ? this.mainConfig.getStringList("default_values." + DeathPenaltiesOption.WHITELISTED_ITEMS.getConfigPath()) : new ArrayList<String>();
+		Material[] whitelistedItems = new Material[whitelistedItemsList.size()];
+		int position = 0;
+		for (String next : whitelistedItemsList)
 		{
-			respawnEffects = plugin.getParser().getParsedPotionsEffects(potionEffects.toArray(new String[potionEffects.size()]), durationInSeconds, trueLevel);
+			try
+			{
+				whitelistedItems[position++] = Material.valueOf(next);
+			}
+			catch (IllegalArgumentException exc)
+			{
+				continue;
+			}
 		}
-		catch (DeathPenaltiesParserException exc)
-		{
-			plugin.getServer().getLogger().log(Level.INFO, "[" + plugin.getName() + "] " + exc.getMessage());
-		}
-		DeathPenaltiesWorld defaultValues = new DeathPenaltiesWorld(enabled, respawnHealthFlat, respawnFoodFlat, respawnMoneyLostFlat, respawnItemsLostFlat, respawnHealthPercentage, respawnFoodPercentage, respawnMoneyLostPercentage, respawnItemsLostPercentage, respawnEffects);
-		plugin.setDeathPenaltiesWorld("default_values", defaultValues);
+		List<String> respawnProcessedCommandsList = (this.mainConfig.contains("default_values." + DeathPenaltiesOption.RESPAWN_PROCESSED_COMMANDS.getConfigPath())) ? this.mainConfig.getStringList("default_values." + DeathPenaltiesOption.RESPAWN_PROCESSED_COMMANDS.getConfigPath()) : new ArrayList<String>();
+		String[] respawnProcessedCommands = respawnProcessedCommandsList.toArray(new String[respawnProcessedCommandsList.size()]);
+		List<String> deathProcessedCommandsList = (this.mainConfig.contains("default_values." + DeathPenaltiesOption.DEATH_PROCESSED_COMMANDS.getConfigPath())) ? this.mainConfig.getStringList("default_values." + DeathPenaltiesOption.DEATH_PROCESSED_COMMANDS.getConfigPath()) : new ArrayList<String>();
+		String[] deathProcessedCommands = deathProcessedCommandsList.toArray(new String[deathProcessedCommandsList.size()]);
+		DeathPenaltiesWorld defaultValues = new DeathPenaltiesWorld(enabled, respawnHealthFlat, respawnFoodFlat, deathMoneyLostFlat, deathItemsDroppedFlat, deathItemsDestroyedFlat, respawnHealthPercentage, respawnFoodPercentage, deathMoneyLostPercentage, deathItemsDroppedPercentage, deathItemsDestroyedPercentage, whitelistedItems, respawnProcessedCommands, deathProcessedCommands);
+		this.plugin.setDeathPenaltiesWorld("default_values", defaultValues);
 		return defaultValues;
 	}
 

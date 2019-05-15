@@ -1,6 +1,6 @@
 package be.waslet.dp.main;
 
-import org.bukkit.potion.PotionEffect;
+import org.bukkit.Material;
 
 public class DeathPenaltiesWorld
 {
@@ -8,79 +8,107 @@ public class DeathPenaltiesWorld
 	private boolean enabled;
 	private double respawnHealthFlat;
 	private int respawnFoodFlat;
-	private double respawnMoneyLostFlat;
-	private int respawnItemsLostFlat;
+	private double deathMoneyLostFlat;
+	private int deathItemsDroppedFlat;
+	private int deathItemsDestroyedFlat;
 	private double respawnHealthPercentage;
 	private double respawnFoodPercentage;
-	private double respawnMoneyLostPercentage;
-	private double respawnItemsLostPercentage;
-	private PotionEffect[] respawnEffects;
+	private double deathMoneyLostPercentage;
+	private double deathItemsDroppedPercentage;
+	private double deathItemsDestroyedPercentage;
+	private Material[] whitelistedItems;
+	private String[] respawnProcessedCommands;
+	private String[] deathProcessedCommands;
 
-	public DeathPenaltiesWorld (boolean enabled, double respawnHealthFlat, int respawnFoodFlat, double respawnMoneyLostFlat, int respawnItemsLostFlat, double respawnHealthPercentage, double respawnFoodPercentage, double respawnMoneyLostPercentage, double respawnItemsLostPercentage, PotionEffect[] respawnEffects)
+	public DeathPenaltiesWorld (boolean enabled, double respawnHealthFlat, int respawnFoodFlat, double deathMoneyLostFlat, int deathItemsDroppedFlat, int deathItemsDestroyedFlat, double respawnHealthPercentage, double respawnFoodPercentage, double deathMoneyLostPercentage, double deathItemsDroppedPercentage, double deathItemsDestroyedPercentage, Material[] whitelistedItems, String[] respawnProcessedCommands, String[] deathProcessedCommands)
 	{
 		this.enabled = enabled;
 		this.respawnHealthFlat = respawnHealthFlat;
 		this.respawnFoodFlat = respawnFoodFlat;
-		this.respawnMoneyLostFlat = respawnMoneyLostFlat;
-		this.respawnItemsLostFlat = respawnItemsLostFlat;
+		this.deathMoneyLostFlat = deathMoneyLostFlat;
+		this.deathItemsDroppedFlat = deathItemsDroppedFlat;
+		this.deathItemsDestroyedFlat = deathItemsDestroyedFlat;
 		this.respawnHealthPercentage = respawnHealthPercentage;
 		this.respawnFoodPercentage = respawnFoodPercentage;
-		this.respawnMoneyLostPercentage = respawnMoneyLostPercentage;
-		this.respawnItemsLostPercentage = respawnItemsLostPercentage;
-		this.respawnEffects = respawnEffects;
+		this.deathMoneyLostPercentage = deathMoneyLostPercentage;
+		this.deathItemsDroppedPercentage = deathItemsDroppedPercentage;
+		this.deathItemsDestroyedPercentage = deathItemsDestroyedPercentage;
+		this.whitelistedItems = whitelistedItems;
+		this.respawnProcessedCommands = respawnProcessedCommands;
+		this.deathProcessedCommands = deathProcessedCommands;
 	}
 
 	public boolean isEnabled ()
 	{
-		return enabled;
+		return this.enabled;
 	}
 
 	public double getRespawnHealthFlat ()
 	{
-		return respawnHealthFlat;
+		return this.respawnHealthFlat;
 	}
 
 	public int getRespawnFoodFlat ()
 	{
-		return respawnFoodFlat;
+		return this.respawnFoodFlat;
 	}
 
-	public double getRespawnMoneyLostFlat ()
+	public double getDeathMoneyLostFlat ()
 	{
-		return respawnMoneyLostFlat;
+		return this.deathMoneyLostFlat;
 	}
-	
-	public int getRespawnItemsLostFlat ()
+
+	public int getDeathItemsDroppedFlat ()
 	{
-		return respawnItemsLostFlat;
+		return this.deathItemsDroppedFlat;
+	}
+
+	public int getDeathItemsDestroyedFlat ()
+	{
+		return this.deathItemsDestroyedFlat;
 	}
 	
 	public double getRespawnHealthPercentage ()
 	{
-		return respawnHealthPercentage;
+		return this.respawnHealthPercentage;
 	}
 
 	public double getRespawnFoodPercentage ()
 	{
-		return respawnFoodPercentage;
+		return this.respawnFoodPercentage;
 	}
 
-	public double getRespawnMoneyLostPercentage ()
+	public double getDeathMoneyLostPercentage ()
 	{
-		return respawnMoneyLostPercentage;
-	}
-	
-	public double getRespawnItemsLostPercentage ()
-	{
-		return respawnItemsLostPercentage;
-	}
-	
-	public PotionEffect[] getRespawnEffects ()
-	{
-		return respawnEffects;
+		return this.deathMoneyLostPercentage;
 	}
 
-	public void setEnabled (String worldName, boolean enabled)
+	public double getDeathItemsDroppedPercentage ()
+	{
+		return this.deathItemsDroppedPercentage;
+	}
+
+	public double getDeathItemsDestroyedPercentage ()
+	{
+		return this.deathItemsDestroyedPercentage;
+	}
+
+	public Material[] getWhitelistedItems ()
+	{
+		return this.whitelistedItems;
+	}
+	
+	public String[] getRespawnProcessedCommands ()
+	{
+		return this.respawnProcessedCommands;
+	}
+	
+	public String[] getDeathProcessedCommands ()
+	{
+		return this.deathProcessedCommands;
+	}
+	
+	public void setEnabled (boolean enabled)
 	{
 		this.enabled = enabled;
 	}
@@ -95,14 +123,19 @@ public class DeathPenaltiesWorld
 		this.respawnFoodFlat = respawnFoodFlat;
 	}
 
-	public void setRespawnMoneyLostFlat (double respawnMoneyLostFlat)
+	public void setDeathMoneyLostFlat (double deathMoneyLostFlat)
 	{
-		this.respawnMoneyLostFlat = respawnMoneyLostFlat;
+		this.deathMoneyLostFlat = deathMoneyLostFlat;
 	}
-	
-	public void setRespawnItemsLostFlat (int respawnItemsLostFlat)
+
+	public void setDeathItemsDroppedFlat (int deathItemsDroppedFlat)
 	{
-		this.respawnItemsLostFlat = respawnItemsLostFlat;
+		this.deathItemsDroppedFlat = deathItemsDroppedFlat;
+	}
+
+	public void setDeathItemsDestroyedFlat (int deathItemsDestroyedFlat)
+	{
+		this.deathItemsDestroyedFlat = deathItemsDestroyedFlat;
 	}
 	
 	public void setRespawnHealthPercentage (double respawnHealthPercentage)
@@ -115,24 +148,39 @@ public class DeathPenaltiesWorld
 		this.respawnFoodPercentage = respawnFoodPercentage;
 	}
 
-	public void setRespawnMoneyLostPercentage (double respawnMoneyLostPercentage)
+	public void setDeathMoneyLostPercentage (double deathMoneyLostPercentage)
 	{
-		this.respawnMoneyLostPercentage = respawnMoneyLostPercentage;
+		this.deathMoneyLostPercentage = deathMoneyLostPercentage;
+	}
+
+	public void setDeathItemsDroppedPercentage (double deathItemsDroppedPercentage)
+	{
+		this.deathItemsDroppedPercentage = deathItemsDroppedPercentage;
+	}
+
+	public void setDeathItemsDestroyedPercentage (double deathItemsDestroyedPercentage)
+	{
+		this.deathItemsDestroyedPercentage = deathItemsDestroyedPercentage;
+	}
+
+	public void setWhitelistedItems (Material[] whitelistedItems)
+	{
+		this.whitelistedItems = whitelistedItems;
 	}
 	
-	public void setRespawnItemsLostPercentage (double respawnItemsLostPercentage)
+	public void setRespawnProcessedCommands (String[] respawnProcessedCommands)
 	{
-		this.respawnItemsLostPercentage = respawnItemsLostPercentage;
+		this.respawnProcessedCommands = respawnProcessedCommands;
 	}
 	
-	public void setRespawnEffects (PotionEffect[] respawnEffects)
+	public void setDeathProcessedCommands (String[] deathProcessedCommands)
 	{
-		this.respawnEffects = respawnEffects;
+		this.deathProcessedCommands = deathProcessedCommands;
 	}
 	
 	public DeathPenaltiesWorld getCopy ()
 	{
-		return new DeathPenaltiesWorld(this.enabled, this.respawnHealthFlat, this.respawnFoodFlat, this.respawnMoneyLostFlat, this.respawnItemsLostFlat, this.respawnHealthPercentage, this.respawnFoodPercentage, this.respawnMoneyLostPercentage, this.respawnItemsLostPercentage, this.respawnEffects);
+		return new DeathPenaltiesWorld(this.enabled, this.respawnHealthFlat, this.respawnFoodFlat, this.deathMoneyLostFlat, this.deathItemsDroppedFlat, this.deathItemsDestroyedFlat, this.respawnHealthPercentage, this.respawnFoodPercentage, this.deathMoneyLostPercentage, this.deathItemsDroppedPercentage, this.deathItemsDestroyedPercentage, this.whitelistedItems, this.respawnProcessedCommands, this.deathProcessedCommands);
 	}
 
 }

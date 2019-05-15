@@ -5,11 +5,9 @@ import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.potion.PotionEffect;
 
 import be.waslet.dp.main.DeathPenalties;
 import be.waslet.dp.main.DeathPenaltiesOption;
-import be.waslet.dp.main.DeathPenaltiesParserException;
 import be.waslet.dp.main.DeathPenaltiesWorld;
 
 public class DeathPenaltiesEditCommand implements CommandExecutor
@@ -30,9 +28,9 @@ public class DeathPenaltiesEditCommand implements CommandExecutor
 		World senderWorld = sender.getServer().getWorld(args[0]);
 		DeathPenaltiesOption option = DeathPenaltiesOption.getOption(args[1]);
 		// option does not exist
-		if (option == null) sender.sendMessage(ChatColor.RED + "The option \"" + args[1] + "\" does not exist.\nAvaiblable options: ENABLED (true/false); HEALTH_FLAT (value > 0); FOOD_FLAT (integer > 0); MONEY_LOST_FLAT (value > 0); ITEMS_LOST_FLAT (integer > 0); HEALTH_PERCENTAGE (value > 0 - max 1.0); FOOD_PERCENTAGE (value > 0 - max 1.0); MONEY_LOST_PERCENTAGE (value > 0 - max 1.0); ITEMS_LOST_PERCENTAGE (value > 0 - max 1.0); EFFECTS (see config format, each one seperated by \";\");");
+		if (option == null) sender.sendMessage(ChatColor.RED + "The option \"" + args[1] + "\" does not exist.\nAvaiblable options: ENABLED (true/false); HEALTH_FLAT (value > 0); FOOD_FLAT (integer > 0); MONEY_LOST_FLAT (value > 0); ITEMS_DROPPED_FLAT (integer > 0); ITEMS_DESTROYED_FLAT (integer > 0); HEALTH_PERCENTAGE (value > 0 - max 1.0); FOOD_PERCENTAGE (value > 0 - max 1.0); MONEY_LOST_PERCENTAGE (value > 0 - max 1.0); ITEMS_DROPPED_PERCENTAGE (value > 0 - max 1.0); ITEMS_DESTROYED_PERCENTAGE (value > 0 - max 1.0);");
 		// invalid option value
-		else if (!option.isValid(args[2])) sender.sendMessage(ChatColor.RED + "The option value \"" + args[2] + "\" is not valid for option \"" + args[1] + "\".\\nAvaiblable options: ENABLED (true/false); HEALTH_FLAT (value > 0); FOOD_FLAT (integer > 0); MONEY_LOST_FLAT (value > 0); ITEMS_LOST_FLAT (integer > 0); HEALTH_PERCENTAGE (value > 0 - max 1.0); FOOD_PERCENTAGE (value > 0 - max 1.0); MONEY_LOST_PERCENTAGE (value > 0 - max 1.0); ITEMS_LOST_PERCENTAGE (value > 0 - max 1.0); EFFECTS (see config format, each one seperated by \";\");");
+		else if (!option.isValid(args[2])) sender.sendMessage(ChatColor.RED + "The option value \"" + args[2] + "\" is not valid for option \"" + args[1] + "\".\nAvaiblable options: ENABLED (true/false); HEALTH_FLAT (value > 0); FOOD_FLAT (integer > 0); MONEY_LOST_FLAT (value > 0); ITEMS_DROPPED_FLAT (integer > 0); ITEMS_DESTROYED_FLAT (integer > 0); HEALTH_PERCENTAGE (value > 0 - max 1.0); FOOD_PERCENTAGE (value > 0 - max 1.0); MONEY_LOST_PERCENTAGE (value > 0 - max 1.0); ITEMS_DROPPED_PERCENTAGE (value > 0 - max 1.0); ITEMS_DESTROYED_PERCENTAGE (value > 0 - max 1.0);");
 		// edit all worlds
 		else if (args[0].equalsIgnoreCase("all")) for (World world : sender.getServer().getWorlds()) editValue(sender, plugin.getDeathPenaltiesWorld(world.getName()), world.getName(), option, args[2]);
 		// specific world does not exist
@@ -47,7 +45,7 @@ public class DeathPenaltiesEditCommand implements CommandExecutor
 		if (option.equals(DeathPenaltiesOption.ENABLED))
 		{
 			boolean enabled = Boolean.parseBoolean(value.toLowerCase());
-			world.setEnabled(worldName, enabled);
+			world.setEnabled(enabled);
 			plugin.getDeathPenaltiesConfig().setWorldValue(worldName, option, enabled);
 		}
 		else if (option.equals(DeathPenaltiesOption.HEALTH_FLAT))
@@ -67,16 +65,24 @@ public class DeathPenaltiesEditCommand implements CommandExecutor
 		else if (option.equals(DeathPenaltiesOption.MONEY_LOST_FLAT))
 		{
 			double moneyLostFlat = Double.parseDouble(value);
-			world.setRespawnMoneyLostFlat(moneyLostFlat);
+			world.setDeathMoneyLostFlat(moneyLostFlat);
 			plugin.getDeathPenaltiesConfig().setWorldValue(worldName, option, moneyLostFlat);
 		}
-		else if (option.equals(DeathPenaltiesOption.ITEMS_LOST_FLAT))
+		else if (option.equals(DeathPenaltiesOption.ITEMS_DROPPED_FLAT))
 		{
-			int itemsLostFlat = (int) Double.parseDouble(value);
-			world.setRespawnItemsLostFlat(itemsLostFlat);
+			int itemsDroppedFlat = (int) Double.parseDouble(value);
+			world.setDeathItemsDroppedFlat(itemsDroppedFlat);
 			// make sure that config writes an integer
-			value = String.valueOf(itemsLostFlat);
-			plugin.getDeathPenaltiesConfig().setWorldValue(worldName, option, itemsLostFlat);
+			value = String.valueOf(itemsDroppedFlat);
+			plugin.getDeathPenaltiesConfig().setWorldValue(worldName, option, itemsDroppedFlat);
+		}
+		else if (option.equals(DeathPenaltiesOption.ITEMS_DESTROYED_FLAT))
+		{
+			int itemsDestroyedFlat = (int) Double.parseDouble(value);
+			world.setDeathItemsDestroyedFlat(itemsDestroyedFlat);
+			// make sure that config writes an integer
+			value = String.valueOf(itemsDestroyedFlat);
+			plugin.getDeathPenaltiesConfig().setWorldValue(worldName, option, itemsDestroyedFlat);
 		}
 		else if (option.equals(DeathPenaltiesOption.HEALTH_PERCENTAGE))
 		{
@@ -99,38 +105,29 @@ public class DeathPenaltiesEditCommand implements CommandExecutor
 		else if (option.equals(DeathPenaltiesOption.MONEY_LOST_PERCENTAGE))
 		{
 			double moneyLostPercentage = Double.parseDouble(value);
-			world.setRespawnMoneyLostPercentage(moneyLostPercentage);
+			world.setDeathMoneyLostPercentage(moneyLostPercentage);
 			plugin.getDeathPenaltiesConfig().setWorldValue(worldName, option, moneyLostPercentage);
 			// remove flat value to use percentage
-			world.setRespawnMoneyLostFlat(0.0);
+			world.setDeathMoneyLostFlat(0.0);
 			plugin.getDeathPenaltiesConfig().setWorldValue(worldName, DeathPenaltiesOption.MONEY_LOST_FLAT, 0.0);
 		}
-		else if (option.equals(DeathPenaltiesOption.ITEMS_LOST_PERCENTAGE))
+		else if (option.equals(DeathPenaltiesOption.ITEMS_DROPPED_PERCENTAGE))
 		{
-			double itemsLostPercentage = Double.parseDouble(value);
-			world.setRespawnItemsLostPercentage(itemsLostPercentage);
-			plugin.getDeathPenaltiesConfig().setWorldValue(worldName, option, itemsLostPercentage);
+			double itemsDroppedPercentage = Double.parseDouble(value);
+			world.setDeathItemsDroppedPercentage(itemsDroppedPercentage);
+			plugin.getDeathPenaltiesConfig().setWorldValue(worldName, option, itemsDroppedPercentage);
 			// remove flat value to use percentage
-			world.setRespawnItemsLostFlat(0);
-			plugin.getDeathPenaltiesConfig().setWorldValue(worldName, DeathPenaltiesOption.ITEMS_LOST_FLAT, 0);
+			world.setDeathItemsDroppedFlat(0);
+			plugin.getDeathPenaltiesConfig().setWorldValue(worldName, DeathPenaltiesOption.ITEMS_DROPPED_FLAT, 0);
 		}
-		else if (option.equals(DeathPenaltiesOption.EFFECTS))
+		else if (option.equals(DeathPenaltiesOption.ITEMS_DESTROYED_PERCENTAGE))
 		{
-			PotionEffect[] potionEffects = null;
-			try
-			{
-				potionEffects = plugin.getParser().getParsedPotionsEffects(value.split(";"), plugin.getDeathPenaltiesConfig().getPotionEffectsInSeconds(), plugin.getDeathPenaltiesConfig().getPotionEffectsTrueLevel());
-			}
-			catch (DeathPenaltiesParserException exc)
-			{
-				sender.sendMessage("Potion value format is not valid please see format in config (each effect must be separated by ;)");
-				return;
-			}
-			if (potionEffects != null)
-			{
-				world.setRespawnEffects(potionEffects);
-				plugin.getDeathPenaltiesConfig().setWorldValue(worldName, option, value.split(";"));
-			}
+			double itemsDestroyedPercentage = Double.parseDouble(value);
+			world.setDeathItemsDestroyedPercentage(itemsDestroyedPercentage);
+			plugin.getDeathPenaltiesConfig().setWorldValue(worldName, option, itemsDestroyedPercentage);
+			// remove flat value to use percentage
+			world.setDeathItemsDestroyedFlat(0);
+			plugin.getDeathPenaltiesConfig().setWorldValue(worldName, DeathPenaltiesOption.ITEMS_DESTROYED_FLAT, 0);
 		}
 		sender.sendMessage(ChatColor.GREEN + "Option " + ChatColor.DARK_GREEN + option.toString() + ChatColor.GREEN + " has been set to " + ChatColor.YELLOW + value + ChatColor.GREEN + " in world: " + ChatColor.YELLOW + worldName);
 	}

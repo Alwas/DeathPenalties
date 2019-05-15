@@ -1,12 +1,12 @@
 package be.waslet.dp.commands;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
 
 import be.waslet.dp.main.DeathPenalties;
 import be.waslet.dp.main.DeathPenaltiesWorld;
@@ -48,26 +48,29 @@ public class DeathPenaltiesStateCommand implements CommandExecutor
 
 	private String getStateMessage (DeathPenaltiesWorld world, String worldName)
 	{
-		String enabled = "Death penalties are currently " + ChatColor.DARK_GREEN + ((world.isEnabled()) ? "enabled" : "disabled") + ChatColor.GREEN + " in world: " + ChatColor.YELLOW + worldName + ChatColor.GREEN;
-		if (!world.isEnabled()) return ChatColor.GREEN + "--------------------\n" + enabled + "\n--------------------";
-		String respawningHealth = "- " + ((world.getRespawnHealthFlat() > 0) ? ChatColor.YELLOW + "" + world.getRespawnHealthFlat() + ChatColor.GREEN + " health (flat)" : ChatColor.YELLOW + "" + world.getRespawnHealthPercentage() + ChatColor.GREEN + " health (percentage)");
-		String respawningFood = "- " + ((world.getRespawnFoodFlat() > 0) ? ChatColor.YELLOW + "" + world.getRespawnFoodFlat() + ChatColor.GREEN + " food (flat)" : ChatColor.YELLOW + "" + world.getRespawnFoodPercentage() + ChatColor.GREEN + " food (percentage)");
-		String respawningMoneyLost = "- " + ((world.getRespawnMoneyLostFlat() > 0) ? ChatColor.YELLOW + "" + world.getRespawnMoneyLostFlat() + ChatColor.GREEN + " money lost (flat)" : ChatColor.YELLOW + "" + world.getRespawnMoneyLostPercentage() + ChatColor.GREEN + " money lost (percentage)");
-		String respawningItemsLost = "- " + ((world.getRespawnItemsLostFlat() > 0) ? ChatColor.YELLOW + "" + world.getRespawnItemsLostFlat() + ChatColor.GREEN + " items lost (flat)" : ChatColor.YELLOW + "" + world.getRespawnItemsLostPercentage() + ChatColor.GREEN + " items lost (percentage)");
-		String respawningEffects = "";
-		if (world.getRespawnEffects() == null || world.getRespawnEffects().length == 0) respawningEffects = respawningEffects.concat("- No effects");
-		else
+		StringBuffer buffer = new StringBuffer();
+		buffer.append(ChatColor.GREEN).append("--------------------\n");
+		buffer.append("Death penalties are currently ").append(ChatColor.DARK_GREEN).append(((world.isEnabled()) ? "enabled" : "disabled")).append(ChatColor.GREEN).append(" in world: ").append(ChatColor.YELLOW).append(worldName).append(ChatColor.GREEN).append("\n");
+		buffer.append("--------------------\n");
+		if (world.isEnabled())
 		{
-			StringBuffer buffer = new StringBuffer();
-			for (PotionEffect effect : world.getRespawnEffects()) buffer.append("- "+getPotionEffectMessage(effect) + "\n");
-			respawningEffects = buffer.toString();
+			buffer.append("Players penalties there are:\n");
+			buffer.append("- ").append(((world.getRespawnHealthFlat() > 0) ? ChatColor.YELLOW + "" + world.getRespawnHealthFlat() + ChatColor.GREEN + " health (flat)" : ChatColor.YELLOW + "" + world.getRespawnHealthPercentage() + ChatColor.GREEN + " health (percentage)") + "\n");
+			buffer.append("- ").append(((world.getRespawnFoodFlat() > 0) ? ChatColor.YELLOW + "" + world.getRespawnFoodFlat() + ChatColor.GREEN + " food (flat)" : ChatColor.YELLOW + "" + world.getRespawnFoodPercentage() + ChatColor.GREEN + " food (percentage)") + "\n");
+			buffer.append("- ").append(((world.getDeathMoneyLostFlat() > 0) ? ChatColor.YELLOW + "" + world.getDeathMoneyLostFlat() + ChatColor.GREEN + " money lost (flat)" : ChatColor.YELLOW + "" + world.getDeathMoneyLostPercentage() + ChatColor.GREEN + " money lost (percentage)") + "\n");
+			buffer.append("- ").append(((world.getDeathItemsDroppedFlat() > 0) ? ChatColor.YELLOW + "" + world.getDeathItemsDroppedFlat() + ChatColor.GREEN + " items dropped (flat)" : ChatColor.YELLOW + "" + world.getDeathItemsDroppedPercentage() + ChatColor.GREEN + " items dropped (percentage)") + "\n");
+			buffer.append("- ").append(((world.getDeathItemsDestroyedFlat() > 0) ? ChatColor.YELLOW + "" + world.getDeathItemsDestroyedFlat() + ChatColor.GREEN + " items destroyed (flat)" : ChatColor.YELLOW + "" + world.getDeathItemsDestroyedPercentage() + ChatColor.GREEN + " items destroyed (percentage)") + "\n");
+			buffer.append("- Whitelisted items:\n");
+			if (world.getWhitelistedItems().length == 0) buffer.append("- No items whitelisted\n");
+			else for (Material material : world.getWhitelistedItems()) buffer.append("- ").append(material).append("\n");
+			buffer.append("- Processed commands on respawn:\n");
+			if (world.getRespawnProcessedCommands().length == 0) buffer.append("- No commands\n");
+			else for (String command : world.getRespawnProcessedCommands()) buffer.append("- ").append(command).append("\n");
+			buffer.append("- Processed commands on death:\n");
+			if (world.getDeathProcessedCommands().length == 0) buffer.append("- No commands\n");
+			else for (String command : world.getDeathProcessedCommands()) buffer.append("- ").append(command).append("\n");
 		}
-		return ChatColor.GREEN + "--------------------\n" + enabled + "\n--------------------\n" + "Players respawn here with:\n" + respawningHealth + "\n" + respawningFood + "\n" + respawningMoneyLost + "\n" + respawningItemsLost + "\n" + respawningEffects;
-	}
-
-	private String getPotionEffectMessage (PotionEffect effect)
-	{
-		return ChatColor.YELLOW + effect.getType().getName() + ChatColor.GREEN + " during " + ChatColor.YELLOW + effect.getDuration() / 20 + ChatColor.GREEN + " seconds (level " + (effect.getAmplifier() + 10) / 10 + ")";
+		return buffer.toString();
 	}
 
 }

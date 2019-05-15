@@ -1,84 +1,109 @@
+##### GENERAL CONFIGURATION VALUES #####
+#
 # DeathPenalties plugin configuration
 # For more information and/or support visit: https://www.spigotmc.org/resources/deathpenalties.58944/
-
-##### GENERAL CONFIGURATION VALUES #####
-
-effects-duration-format-in-seconds: true
-# duration in effects formatting is in seconds instead of ticks
-
-effects-level-format-true-level: true
-# level in effects formatting is entered level instead of starting from 0
-
+#
 ##### PER WORLD CONFIGURATION VALUES #####
-
+#
 # you can add worlds here to set per world custom values
 # if a world is not added here default values will be used instead
 # if an option is missing it will be set to its default value
 # be careful to respect the format otherwise the plugin will ignore it
-
+#
+# for flat values if value <= 0 percentage value is used instead
+# percentage values are ignored if you have set a flat value > 0
+#
 #example_world:
 #  enabled: true
 #  # if enabled death penalties will be applied
+#
 #  respawn-health-flat: 0.0
 #  # health penalized player will respawn with
-#  # if value <= 0 percentage value is used instead
+#
 #  respawn-food-flat: 0
 #  # food penalized player will respawn with (integer numbers)
-#  # if value <= 0 percentage value is used instead
-#  respawn-money-lost-flat: 10.0
-#  # money penalized player will lose on respawn
-#  # if value <= 0 percentage value is used instead
-#  respawn-items-lost-flat: 1
-#  # items penalized player will lose on respawn
-#  # if value <= 0 percentage value is used instead
+#
+#  death-money-lost-flat: 10.0
+#  # money penalized player will lose on death
+#
+#  death-items-dropped-flat: 1 (integer numbers)
+#  # items that will be droped from penalized player inventory on death
+#  # this option only works if keepInventory gamerule is set to true
+#
+#  death-items-destroyed-flat: 1 (integer numbers)
+#  # items that will be destroyed in penalized player inventory on death
+#  # this option still applies before the drop option if keepInventory gamerule is set to true
+#
 #  respawn-health-percentage: 0.21
 #  # health penalized player will respawn with in percentage (0.21 is 21 percents)
-#  # warning this value is ignored if you have set a flat health value > 0
+#
 #  respawn-food-percentage: 0.4
 #  # food penalized player will respawn with in percentage
-#  # warning this value is ignored if you have set a flat food value > 0
-#  respawn-money-lost-percentage: 0.01
-#  # money penalized player will lose on respawn in percentage
-#  # warning this value is ignored if you have set a flat money lost value > 0
-#  respawn-items-lost-percentage: 0.05
-#  # items penalized player will lose on respawn in percentage
-#  # warning this value is ignored if you have set a flat items lost value > 0
-#  respawn-effects:
-#    - SLOWNESS:30:1:false
-#    - SLOW_DIGGING:60:1:false
-#    - WEAKNESS:120:2:false
-#  # effects format is EFFECT_NAME:DURATION:LEVEL:SHOW_PARTICLES
-#  # list of all effects names available here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/potion/PotionEffectType.html
-
-# values below are examples of use and for testing purpose replace it by your own values !
+#
+#  death-money-lost-percentage: 0.01
+#  # money penalized player will lose on death in percentage
+#
+#  death-items-dropped-percentage: 0.05
+#  # items that will be dropped from penalized player inventory on death in percentage
+#
+#  death-items-destroyed-percentage: 0.05
+#  # items that will be destroyed in penalized player inventory on death in percentage
+#
+#  respawn-processed-commands:
+#    - SERVER;effect give %player% minecraft:slowness 30 0 true
+#  # commands that will be processed when the player respawns
+#  # command format is EXECUTER_TYPE;COMMAND executer type can be [SERVER/PLAYER]
+#  # warning do not add the / before the command! Older versions commands are valid too
+#  # %player% can be used and represents the player name
+#  # for example this command will apply the slowness potion effect for 30s when the player respawns
+#
+#  death-processed-commands:
+#    - SERVER;execute at %player% run summon minecraft:zombie
+#  # commands that will be processed when the player dies
+#  # for example this command will spawn a zombie at the player death location when he dies
+#
+#
+#
+# values below are examples of use and for testing purpose replace it by your own !
+#
 
 default_values:
   enabled: true
   respawn-health-percentage: 0.5
   respawn-food-flat: 16
-  respawn-money-lost-flat: 10
-  respawn-items-lost-flat: 0
-  respawn-effects:
-    - SLOW:30:1:false
-    - SLOW_DIGGING:60:1:false
-    - WEAKNESS:120:2:false
+  death-money-lost-flat: 10
+  death-items-dropped-percentage: 0.25
+  death-items-destroyed-flat: 2
+  whitelisted-items:
+    - DIAMOND_PICKAXE
+    - DIAMOND_SWORD
+    - DIAMOND_HELMET
+    - DIAMOND_CHESTPLATE
+    - DIAMOND_LEGGINGS
+    - DIAMOND_BOOTS
+  respawn-processed-commands:
+    - SERVER;effect give %player% minecraft:slowness 30 0 true
+    - SERVER;effect give %player% minecraft:mining_fatigue 60 0 true
+    - SERVER;effect give %player% minecraft:weakness 120 0 true
+  death-processed-commands:
+    - SERVER;execute at %player% run summon minecraft:zombie
 world_nether:
   enabled: true
   respawn-health-flat: 4
   respawn-food-percentage: 0.5
-  respawn-money-lost-percentage: 0.01
-  respawn-items-lost-percentage: 0.0
-  respawn-effects:
-    - SLOW:60:2:false
-    - SLOW_DIGGING:90:2:false
-    - WEAKNESS:180:3:false
+  death-money-lost-percentage: 0.01
+  death-items-destroyed-percentage: 0.25
+  respawn-processed-commands:
+    - SERVER;effect give %player% minecraft:slowness 60 1 true
+    - SERVER;effect give %player% minecraft:mining_fatigue 90 1 true
+    - SERVER;effect give %player% minecraft:weakness 180 1 true
 world_the_end:
   enabled: true
   respawn-food-flat: 2
   respawn-health-percentage: 0.05
-  respawn-effects:
-    - SLOW:100:2:false
-    - SLOW_DIGGING:150:3:false
-    - WEAKNESS:200:4:false
+  respawn-processed-commands:
+    - SERVER;effect give %player% minecraft:slowness 100 1 true
+    - SERVER;effect give %player% minecraft:mining_fatigue 150 2 true
+    - SERVER;effect give %player% minecraft:weakness 200 2 true
 world_creative:
   enabled: false
