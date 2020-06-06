@@ -46,8 +46,26 @@
 #  death-items-dropped-percentage: 0.05
 #  # items that will be dropped from penalized player inventory on death in percentage
 #
+#  death-items-dropped-chance-percentage: 0.5
+#  # chance that items will be dropped from penalized player inventory on death in percentage
+#
 #  death-items-destroyed-percentage: 0.05
 #  # items that will be destroyed in penalized player inventory on death in percentage
+#
+#  death-items-destroyed-chance-percentage: 0.5
+#  # chance that items will be destroyed in penalized player inventory on death in percentage
+#
+#  whitelisted-items:
+#    - DIAMOND_PICKAXE
+#    - DIAMOND_SWORD
+#    - DIAMOND_HELMET
+#    - DIAMOND_CHESTPLATE
+#    - DIAMOND_LEGGINGS
+#    - DIAMOND_BOOTS
+#  # items type that will be ignored by the destroy/drop items options
+#  # warning do not forget that if you create a world specific whitelist the default one will be overwritten!
+#  # the list of materials that can be used can be found here:
+#  # https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
 #
 #  respawn-processed-commands:
 #    - SERVER;effect give %player% minecraft:slowness 30 0 true
@@ -73,7 +91,9 @@ default_values:
   respawn-food-flat: 16
   death-money-lost-flat: 10
   death-items-dropped-percentage: 0.25
+  death-items-dropped-chance-percentage: 0.5
   death-items-destroyed-flat: 2
+  death-items-destroyed-chance-percentage: 0.5
   whitelisted-items:
     - DIAMOND_PICKAXE
     - DIAMOND_SWORD
@@ -92,6 +112,7 @@ world_nether:
   respawn-health-flat: 4
   respawn-food-percentage: 0.5
   death-money-lost-percentage: 0.01
+  death-items-dropped-chance-percentage: 1.0
   death-items-destroyed-percentage: 0.25
   respawn-processed-commands:
     - SERVER;effect give %player% minecraft:slowness 60 1 true
@@ -101,6 +122,8 @@ world_the_end:
   enabled: true
   respawn-food-flat: 2
   respawn-health-percentage: 0.05
+  death-items-dropped-chance-percentage: 1.0
+  death-items-destroyed-chance-percentage: 1.0
   respawn-processed-commands:
     - SERVER;effect give %player% minecraft:slowness 100 1 true
     - SERVER;effect give %player% minecraft:mining_fatigue 150 2 true

@@ -13,7 +13,9 @@ public enum DeathPenaltiesOption
 	FOOD_PERCENTAGE("respawn-food-percentage", true),
 	MONEY_LOST_PERCENTAGE("death-money-lost-percentage", true),
 	ITEMS_DROPPED_PERCENTAGE("death-items-dropped-percentage", true),
+	ITEMS_DROPPED_CHANCE_PERCENTAGE("death-items-dropped-chance-percentage", true),
 	ITEMS_DESTROYED_PERCENTAGE("death-items-destroyed-percentage", true),
+	ITEMS_DESTROYED_CHANCE_PERCENTAGE("death-items-destroyed-chance-percentage", true),
 	WHITELISTED_ITEMS("whitelisted-items", false),
 	RESPAWN_PROCESSED_COMMANDS("respawn-processed-commands", false),
 	DEATH_PROCESSED_COMMANDS("death-processed-commands", false);

@@ -14,6 +14,7 @@ public class DeathPenaltiesConfig
 {
 
 	private DeathPenalties plugin;
+	private File mainConfigFile;
 	private FileConfiguration mainConfig;
 	private FileConfiguration translationsConfig;
 	
@@ -22,15 +23,15 @@ public class DeathPenaltiesConfig
 		this.plugin = plugin;
 		File directory = plugin.getDataFolder();
 		if (!directory.exists()) directory.mkdirs();
-		File mainFile = new File(directory, "config.yml");
+		this.mainConfigFile = new File(directory, "config.yml");
 		File translationsFile = new File(directory, "translations.yml");
 		this.mainConfig = new YamlConfiguration();
 		this.translationsConfig = new YamlConfiguration();
-		if (!mainFile.exists()) plugin.saveResource("config.yml", false);
+		if (!this.mainConfigFile.exists()) plugin.saveResource("config.yml", false);
 		if (!translationsFile.exists()) plugin.saveResource("translations.yml", false);
 		try
 		{
-			this.mainConfig.load(mainFile);
+			this.mainConfig.load(this.mainConfigFile);
 			this.translationsConfig.load(translationsFile);
 		}
 		catch (IOException e)
@@ -57,7 +58,14 @@ public class DeathPenaltiesConfig
 	public void setWorldValue (String worldName, DeathPenaltiesOption option, Object value)
 	{
 		this.mainConfig.set(worldName + "." + option.getConfigPath(), value);
-		this.plugin.saveConfig();
+		try
+		{
+			this.mainConfig.save(this.mainConfigFile);
+		}
+		catch (IOException exc)
+		{
+			exc.printStackTrace();
+		}
 	}
 
 	/**
@@ -75,7 +83,9 @@ public class DeathPenaltiesConfig
 		double respawnFoodPercentage = (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.FOOD_PERCENTAGE.getConfigPath())) ? this.mainConfig.getDouble(worldNamePath + DeathPenaltiesOption.FOOD_PERCENTAGE.getConfigPath()) : 0.0;
 		double deathMoneyLostPercentage = (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.MONEY_LOST_PERCENTAGE.getConfigPath())) ? this.mainConfig.getDouble(worldNamePath + DeathPenaltiesOption.MONEY_LOST_PERCENTAGE.getConfigPath()) : 0.0;
 		double deathItemsDroppedPercentage = (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.ITEMS_DROPPED_PERCENTAGE.getConfigPath())) ? this.mainConfig.getDouble(worldNamePath + DeathPenaltiesOption.ITEMS_DROPPED_PERCENTAGE.getConfigPath()) : 0.0;
+		double deathItemsDroppedChancePercentage = (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.ITEMS_DROPPED_CHANCE_PERCENTAGE.getConfigPath())) ? this.mainConfig.getDouble(worldNamePath + DeathPenaltiesOption.ITEMS_DROPPED_CHANCE_PERCENTAGE.getConfigPath()) : defaultValues.getDeathItemsDroppedChancePercentage();
 		double deathItemsDestroyedPercentage = (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.ITEMS_DESTROYED_PERCENTAGE.getConfigPath())) ? this.mainConfig.getDouble(worldNamePath + DeathPenaltiesOption.ITEMS_DESTROYED_PERCENTAGE.getConfigPath()) : 0.0;
+		double deathItemsDestroyedChancePercentage = (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.ITEMS_DESTROYED_CHANCE_PERCENTAGE.getConfigPath())) ? this.mainConfig.getDouble(worldNamePath + DeathPenaltiesOption.ITEMS_DESTROYED_CHANCE_PERCENTAGE.getConfigPath()) : defaultValues.getDeathItemsDestroyedChancePercentage();
 		// check config and check if has percentage value set (must ignore default and set 0 then to avoid using default flat)
 		double respawnHealthFlat = (respawnHealthPercentage <= 0) ? (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.HEALTH_FLAT.getConfigPath())) ? this.mainConfig.getDouble(worldNamePath + DeathPenaltiesOption.HEALTH_FLAT.getConfigPath()) : defaultValues.getRespawnHealthFlat() : 0.0;
 		int respawnFoodFlat = (respawnFoodPercentage <= 0) ? (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.FOOD_FLAT.getConfigPath())) ? this.mainConfig.getInt(worldNamePath + DeathPenaltiesOption.FOOD_FLAT.getConfigPath()) : defaultValues.getRespawnFoodFlat() : 0;
@@ -117,7 +127,7 @@ public class DeathPenaltiesConfig
 			List<String> deathProcessedCommandsList = this.mainConfig.getStringList(worldNamePath + DeathPenaltiesOption.DEATH_PROCESSED_COMMANDS.getConfigPath());
 			deathProcessedCommands = deathProcessedCommandsList.toArray(new String[deathProcessedCommandsList.size()]);
 		}
-		this.plugin.setDeathPenaltiesWorld(worldName, new DeathPenaltiesWorld(enabled, respawnHealthFlat, respawnFoodFlat, deathMoneyLostFlat, deathItemsDroppedFlat, deathItemsDestroyedFlat, respawnHealthPercentage, respawnFoodPercentage, deathMoneyLostPercentage, deathItemsDroppedPercentage, deathItemsDestroyedPercentage, whitelistedItems, respawnProcessedCommands, deathProcessedCommands));
+		this.plugin.setDeathPenaltiesWorld(worldName, new DeathPenaltiesWorld(enabled, respawnHealthFlat, respawnFoodFlat, deathMoneyLostFlat, deathItemsDroppedFlat, deathItemsDestroyedFlat, respawnHealthPercentage, respawnFoodPercentage, deathMoneyLostPercentage, deathItemsDroppedPercentage, deathItemsDroppedChancePercentage, deathItemsDestroyedPercentage, deathItemsDestroyedChancePercentage, whitelistedItems, respawnProcessedCommands, deathProcessedCommands));
 	}
 	
 	/**
@@ -133,7 +143,9 @@ public class DeathPenaltiesConfig
 		double respawnFoodPercentage = this.mainConfig.getDouble("default_values." + DeathPenaltiesOption.FOOD_PERCENTAGE.getConfigPath(), 0.0);
 		double deathMoneyLostPercentage = this.mainConfig.getDouble("default_values." + DeathPenaltiesOption.MONEY_LOST_PERCENTAGE.getConfigPath(), 0.0);
 		double deathItemsDroppedPercentage = this.mainConfig.getDouble("default_values." + DeathPenaltiesOption.ITEMS_DROPPED_PERCENTAGE.getConfigPath(), 0.0);
+		double deathItemsDroppedChancePercentage = this.mainConfig.getDouble("default_values." + DeathPenaltiesOption.ITEMS_DROPPED_CHANCE_PERCENTAGE.getConfigPath(), 1.0);
 		double deathItemsDestroyedPercentage = this.mainConfig.getDouble("default_values." + DeathPenaltiesOption.ITEMS_DESTROYED_PERCENTAGE.getConfigPath(), 0.0);
+		double deathItemsDestroyedChancePercentage = this.mainConfig.getDouble("default_values." + DeathPenaltiesOption.ITEMS_DESTROYED_CHANCE_PERCENTAGE.getConfigPath(), 1.0);
 		double respawnHealthFlat = (respawnHealthPercentage <= 0) ? (this.mainConfig.contains("default_values." + DeathPenaltiesOption.HEALTH_FLAT.getConfigPath())) ? this.mainConfig.getDouble("default_values." + DeathPenaltiesOption.HEALTH_FLAT.getConfigPath()) : 0.0 : 0.0;
 		int respawnFoodFlat = (respawnFoodPercentage <= 0) ? (this.mainConfig.contains("default_values." + DeathPenaltiesOption.FOOD_FLAT.getConfigPath())) ? this.mainConfig.getInt("default_values." + DeathPenaltiesOption.FOOD_FLAT.getConfigPath()) : 0 : 0;
 		double deathMoneyLostFlat = (deathMoneyLostPercentage <= 0) ? (this.mainConfig.contains("default_values." + DeathPenaltiesOption.MONEY_LOST_FLAT.getConfigPath())) ? this.mainConfig.getDouble("default_values." + DeathPenaltiesOption.MONEY_LOST_FLAT.getConfigPath()) : 0.0 : 0.0;
@@ -157,7 +169,7 @@ public class DeathPenaltiesConfig
 		String[] respawnProcessedCommands = respawnProcessedCommandsList.toArray(new String[respawnProcessedCommandsList.size()]);
 		List<String> deathProcessedCommandsList = (this.mainConfig.contains("default_values." + DeathPenaltiesOption.DEATH_PROCESSED_COMMANDS.getConfigPath())) ? this.mainConfig.getStringList("default_values." + DeathPenaltiesOption.DEATH_PROCESSED_COMMANDS.getConfigPath()) : new ArrayList<String>();
 		String[] deathProcessedCommands = deathProcessedCommandsList.toArray(new String[deathProcessedCommandsList.size()]);
-		DeathPenaltiesWorld defaultValues = new DeathPenaltiesWorld(enabled, respawnHealthFlat, respawnFoodFlat, deathMoneyLostFlat, deathItemsDroppedFlat, deathItemsDestroyedFlat, respawnHealthPercentage, respawnFoodPercentage, deathMoneyLostPercentage, deathItemsDroppedPercentage, deathItemsDestroyedPercentage, whitelistedItems, respawnProcessedCommands, deathProcessedCommands);
+		DeathPenaltiesWorld defaultValues = new DeathPenaltiesWorld(enabled, respawnHealthFlat, respawnFoodFlat, deathMoneyLostFlat, deathItemsDroppedFlat, deathItemsDestroyedFlat, respawnHealthPercentage, respawnFoodPercentage, deathMoneyLostPercentage, deathItemsDroppedPercentage, deathItemsDroppedChancePercentage, deathItemsDestroyedPercentage, deathItemsDestroyedChancePercentage, whitelistedItems, respawnProcessedCommands, deathProcessedCommands);
 		this.plugin.setDeathPenaltiesWorld("default_values", defaultValues);
 		return defaultValues;
 	}

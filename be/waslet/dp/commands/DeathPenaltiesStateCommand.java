@@ -59,7 +59,9 @@ public class DeathPenaltiesStateCommand implements CommandExecutor
 			buffer.append("- ").append(((world.getRespawnFoodFlat() > 0) ? ChatColor.YELLOW + "" + world.getRespawnFoodFlat() + ChatColor.GREEN + " food (flat)" : ChatColor.YELLOW + "" + world.getRespawnFoodPercentage() + ChatColor.GREEN + " food (percentage)") + "\n");
 			buffer.append("- ").append(((world.getDeathMoneyLostFlat() > 0) ? ChatColor.YELLOW + "" + world.getDeathMoneyLostFlat() + ChatColor.GREEN + " money lost (flat)" : ChatColor.YELLOW + "" + world.getDeathMoneyLostPercentage() + ChatColor.GREEN + " money lost (percentage)") + "\n");
 			buffer.append("- ").append(((world.getDeathItemsDroppedFlat() > 0) ? ChatColor.YELLOW + "" + world.getDeathItemsDroppedFlat() + ChatColor.GREEN + " items dropped (flat)" : ChatColor.YELLOW + "" + world.getDeathItemsDroppedPercentage() + ChatColor.GREEN + " items dropped (percentage)") + "\n");
+			buffer.append("- ").append(ChatColor.YELLOW + "" + world.getDeathItemsDroppedChancePercentage() + ChatColor.GREEN + " items dropped chance (percentage)\n");
 			buffer.append("- ").append(((world.getDeathItemsDestroyedFlat() > 0) ? ChatColor.YELLOW + "" + world.getDeathItemsDestroyedFlat() + ChatColor.GREEN + " items destroyed (flat)" : ChatColor.YELLOW + "" + world.getDeathItemsDestroyedPercentage() + ChatColor.GREEN + " items destroyed (percentage)") + "\n");
+			buffer.append("- ").append(ChatColor.YELLOW + "" + world.getDeathItemsDestroyedChancePercentage() + ChatColor.GREEN + " items destroyed chance (percentage)\n");
 			buffer.append("- Whitelisted items:\n");
 			if (world.getWhitelistedItems().length == 0) buffer.append("- No items whitelisted\n");
 			else for (Material material : world.getWhitelistedItems()) buffer.append("- ").append(material).append("\n");

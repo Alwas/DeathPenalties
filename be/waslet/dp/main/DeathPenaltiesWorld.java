@@ -15,12 +15,14 @@ public class DeathPenaltiesWorld
 	private double respawnFoodPercentage;
 	private double deathMoneyLostPercentage;
 	private double deathItemsDroppedPercentage;
+	private double deathItemsDroppedChancePercentage;
 	private double deathItemsDestroyedPercentage;
+	private double deathItemsDestroyedChancePercentage;
 	private Material[] whitelistedItems;
 	private String[] respawnProcessedCommands;
 	private String[] deathProcessedCommands;
 
-	public DeathPenaltiesWorld (boolean enabled, double respawnHealthFlat, int respawnFoodFlat, double deathMoneyLostFlat, int deathItemsDroppedFlat, int deathItemsDestroyedFlat, double respawnHealthPercentage, double respawnFoodPercentage, double deathMoneyLostPercentage, double deathItemsDroppedPercentage, double deathItemsDestroyedPercentage, Material[] whitelistedItems, String[] respawnProcessedCommands, String[] deathProcessedCommands)
+	public DeathPenaltiesWorld (boolean enabled, double respawnHealthFlat, int respawnFoodFlat, double deathMoneyLostFlat, int deathItemsDroppedFlat, int deathItemsDestroyedFlat, double respawnHealthPercentage, double respawnFoodPercentage, double deathMoneyLostPercentage, double deathItemsDroppedPercentage, double deathItemsDroppedChancePercentage, double deathItemsDestroyedPercentage, double deathItemsDestroyedChancePercentage, Material[] whitelistedItems, String[] respawnProcessedCommands, String[] deathProcessedCommands)
 	{
 		this.enabled = enabled;
 		this.respawnHealthFlat = respawnHealthFlat;
@@ -32,7 +34,9 @@ public class DeathPenaltiesWorld
 		this.respawnFoodPercentage = respawnFoodPercentage;
 		this.deathMoneyLostPercentage = deathMoneyLostPercentage;
 		this.deathItemsDroppedPercentage = deathItemsDroppedPercentage;
+		this.deathItemsDroppedChancePercentage = deathItemsDroppedChancePercentage;
 		this.deathItemsDestroyedPercentage = deathItemsDestroyedPercentage;
+		this.deathItemsDestroyedChancePercentage = deathItemsDestroyedChancePercentage;
 		this.whitelistedItems = whitelistedItems;
 		this.respawnProcessedCommands = respawnProcessedCommands;
 		this.deathProcessedCommands = deathProcessedCommands;
@@ -88,9 +92,19 @@ public class DeathPenaltiesWorld
 		return this.deathItemsDroppedPercentage;
 	}
 
+	public double getDeathItemsDroppedChancePercentage ()
+	{
+		return this.deathItemsDroppedChancePercentage;
+	}
+
 	public double getDeathItemsDestroyedPercentage ()
 	{
 		return this.deathItemsDestroyedPercentage;
+	}
+
+	public double getDeathItemsDestroyedChancePercentage ()
+	{
+		return this.deathItemsDestroyedChancePercentage;
 	}
 
 	public Material[] getWhitelistedItems ()
@@ -158,9 +172,19 @@ public class DeathPenaltiesWorld
 		this.deathItemsDroppedPercentage = deathItemsDroppedPercentage;
 	}
 
+	public void setDeathItemsDroppedChancePercentage (double deathItemsDroppedChancePercentage)
+	{
+		this.deathItemsDroppedChancePercentage = deathItemsDroppedChancePercentage;
+	}
+
 	public void setDeathItemsDestroyedPercentage (double deathItemsDestroyedPercentage)
 	{
 		this.deathItemsDestroyedPercentage = deathItemsDestroyedPercentage;
+	}
+
+	public void setDeathItemsDestroyedChancePercentage (double deathItemsDestroyedChancePercentage)
+	{
+		this.deathItemsDestroyedChancePercentage = deathItemsDestroyedChancePercentage;
 	}
 
 	public void setWhitelistedItems (Material[] whitelistedItems)
@@ -180,7 +204,7 @@ public class DeathPenaltiesWorld
 	
 	public DeathPenaltiesWorld getCopy ()
 	{
-		return new DeathPenaltiesWorld(this.enabled, this.respawnHealthFlat, this.respawnFoodFlat, this.deathMoneyLostFlat, this.deathItemsDroppedFlat, this.deathItemsDestroyedFlat, this.respawnHealthPercentage, this.respawnFoodPercentage, this.deathMoneyLostPercentage, this.deathItemsDroppedPercentage, this.deathItemsDestroyedPercentage, this.whitelistedItems, this.respawnProcessedCommands, this.deathProcessedCommands);
+		return new DeathPenaltiesWorld(this.enabled, this.respawnHealthFlat, this.respawnFoodFlat, this.deathMoneyLostFlat, this.deathItemsDroppedFlat, this.deathItemsDestroyedFlat, this.respawnHealthPercentage, this.respawnFoodPercentage, this.deathMoneyLostPercentage, this.deathItemsDroppedPercentage, this.deathItemsDroppedChancePercentage, this.deathItemsDestroyedPercentage, this.deathItemsDestroyedChancePercentage, this.whitelistedItems, this.respawnProcessedCommands, this.deathProcessedCommands);
 	}
 
 }

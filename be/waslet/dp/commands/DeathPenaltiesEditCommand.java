@@ -28,9 +28,9 @@ public class DeathPenaltiesEditCommand implements CommandExecutor
 		World senderWorld = sender.getServer().getWorld(args[0]);
 		DeathPenaltiesOption option = DeathPenaltiesOption.getOption(args[1]);
 		// option does not exist
-		if (option == null) sender.sendMessage(ChatColor.RED + "The option \"" + args[1] + "\" does not exist.\nAvaiblable options: ENABLED (true/false); HEALTH_FLAT (value > 0); FOOD_FLAT (integer > 0); MONEY_LOST_FLAT (value > 0); ITEMS_DROPPED_FLAT (integer > 0); ITEMS_DESTROYED_FLAT (integer > 0); HEALTH_PERCENTAGE (value > 0 - max 1.0); FOOD_PERCENTAGE (value > 0 - max 1.0); MONEY_LOST_PERCENTAGE (value > 0 - max 1.0); ITEMS_DROPPED_PERCENTAGE (value > 0 - max 1.0); ITEMS_DESTROYED_PERCENTAGE (value > 0 - max 1.0);");
+		if (option == null) sender.sendMessage(ChatColor.RED + "The option \"" + args[1] + "\" does not exist.\nAvaiblable options: ENABLED (true/false); HEALTH_FLAT (value > 0); FOOD_FLAT (integer > 0); MONEY_LOST_FLAT (value > 0); ITEMS_DROPPED_FLAT (integer > 0); ITEMS_DESTROYED_FLAT (integer > 0); HEALTH_PERCENTAGE (value > 0 - max 1.0); FOOD_PERCENTAGE (value > 0 - max 1.0); MONEY_LOST_PERCENTAGE (value > 0 - max 1.0); ITEMS_DROPPED_PERCENTAGE (value > 0 - max 1.0); ITEMS_DROPPED_CHANCE_PERCENTAGE (value > 0 - max 1.0); ITEMS_DESTROYED_PERCENTAGE (value > 0 - max 1.0); ITEMS_DESTROYED_CHANCE_PERCENTAGE (value > 0 - max 1.0);");
 		// invalid option value
-		else if (!option.isValid(args[2])) sender.sendMessage(ChatColor.RED + "The option value \"" + args[2] + "\" is not valid for option \"" + args[1] + "\".\nAvaiblable options: ENABLED (true/false); HEALTH_FLAT (value > 0); FOOD_FLAT (integer > 0); MONEY_LOST_FLAT (value > 0); ITEMS_DROPPED_FLAT (integer > 0); ITEMS_DESTROYED_FLAT (integer > 0); HEALTH_PERCENTAGE (value > 0 - max 1.0); FOOD_PERCENTAGE (value > 0 - max 1.0); MONEY_LOST_PERCENTAGE (value > 0 - max 1.0); ITEMS_DROPPED_PERCENTAGE (value > 0 - max 1.0); ITEMS_DESTROYED_PERCENTAGE (value > 0 - max 1.0);");
+		else if (!option.isValid(args[2])) sender.sendMessage(ChatColor.RED + "The option value \"" + args[2] + "\" is not valid for option \"" + args[1] + "\".\nAvaiblable options: ENABLED (true/false); HEALTH_FLAT (value > 0); FOOD_FLAT (integer > 0); MONEY_LOST_FLAT (value > 0); ITEMS_DROPPED_FLAT (integer > 0); ITEMS_DESTROYED_FLAT (integer > 0); HEALTH_PERCENTAGE (value > 0 - max 1.0); FOOD_PERCENTAGE (value > 0 - max 1.0); MONEY_LOST_PERCENTAGE (value > 0 - max 1.0); ITEMS_DROPPED_PERCENTAGE (value > 0 - max 1.0); ITEMS_DROPPED_CHANCE_PERCENTAGE (value > 0 - max 1.0); ITEMS_DESTROYED_PERCENTAGE (value > 0 - max 1.0); ITEMS_DESTROYED_CHANCE_PERCENTAGE (value > 0 - max 1.0);");
 		// edit all worlds
 		else if (args[0].equalsIgnoreCase("all")) for (World world : sender.getServer().getWorlds()) editValue(sender, plugin.getDeathPenaltiesWorld(world.getName()), world.getName(), option, args[2]);
 		// specific world does not exist
@@ -120,6 +120,12 @@ public class DeathPenaltiesEditCommand implements CommandExecutor
 			world.setDeathItemsDroppedFlat(0);
 			plugin.getDeathPenaltiesConfig().setWorldValue(worldName, DeathPenaltiesOption.ITEMS_DROPPED_FLAT, 0);
 		}
+		else if (option.equals(DeathPenaltiesOption.ITEMS_DROPPED_CHANCE_PERCENTAGE))
+		{
+			double itemsDroppedChancePercentage = Double.parseDouble(value);
+			world.setDeathItemsDroppedChancePercentage(itemsDroppedChancePercentage);
+			plugin.getDeathPenaltiesConfig().setWorldValue(worldName, option, itemsDroppedChancePercentage);
+		}
 		else if (option.equals(DeathPenaltiesOption.ITEMS_DESTROYED_PERCENTAGE))
 		{
 			double itemsDestroyedPercentage = Double.parseDouble(value);
@@ -128,6 +134,12 @@ public class DeathPenaltiesEditCommand implements CommandExecutor
 			// remove flat value to use percentage
 			world.setDeathItemsDestroyedFlat(0);
 			plugin.getDeathPenaltiesConfig().setWorldValue(worldName, DeathPenaltiesOption.ITEMS_DESTROYED_FLAT, 0);
+		}
+		else if (option.equals(DeathPenaltiesOption.ITEMS_DESTROYED_CHANCE_PERCENTAGE))
+		{
+			double itemsDestroyedChancePercentage = Double.parseDouble(value);
+			world.setDeathItemsDestroyedChancePercentage(itemsDestroyedChancePercentage);
+			plugin.getDeathPenaltiesConfig().setWorldValue(worldName, option, itemsDestroyedChancePercentage);
 		}
 		sender.sendMessage(ChatColor.GREEN + "Option " + ChatColor.DARK_GREEN + option.toString() + ChatColor.GREEN + " has been set to " + ChatColor.YELLOW + value + ChatColor.GREEN + " in world: " + ChatColor.YELLOW + worldName);
 	}

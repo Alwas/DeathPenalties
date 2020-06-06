@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.logging.Level;
 
 import org.bukkit.Material;
@@ -33,6 +34,7 @@ public class DeathPenalties extends JavaPlugin implements Listener
 	private final Hashtable<String, DeathPenaltiesWorld> deathPenaltiesWorlds = new Hashtable<String, DeathPenaltiesWorld>();
 	private DeathPenaltiesConfig config;
 	private Economy economy;
+	private Random random = new Random();
 
 	@Override
 	public void onEnable ()
@@ -40,7 +42,7 @@ public class DeathPenalties extends JavaPlugin implements Listener
 		// config startup
 		this.config = new DeathPenaltiesConfig(this);
 		// load default values
-		DeathPenaltiesWorld defaultValues = config.loadDefaultValues();
+		DeathPenaltiesWorld defaultValues = this.config.loadDefaultValues();
 		Plugin multiverse = getServer().getPluginManager().getPlugin("Multiverse-Core");
 		getServer().getLogger().log(Level.INFO, "[" + getName() + "] Loading all worlds");
 		// if mv is NOT installed load all bukkit worlds death penalties from config 
@@ -106,20 +108,28 @@ public class DeathPenalties extends JavaPlugin implements Listener
 		}
 		else
 		{
+			// first check destroyed chance
 			// use destroy items functions with player
 			// if flat value is disabled use percentage and only set value if we have a valid percentage
-			if (worldValues.getDeathItemsDestroyedFlat() <= 0)
+			if (worldValues.getDeathItemsDestroyedChancePercentage() > getChance())
 			{
-				if (worldValues.getDeathItemsDestroyedPercentage() <= 1 && worldValues.getDeathItemsDestroyedPercentage() > 0) destroyItems(event.getEntity(), worldValues.getDeathItemsDestroyedPercentage(), worldValues.getWhitelistedItems());
+				if (worldValues.getDeathItemsDestroyedFlat() <= 0)
+				{
+					if (worldValues.getDeathItemsDestroyedPercentage() <= 1 && worldValues.getDeathItemsDestroyedPercentage() > 0) destroyItems(event.getEntity(), worldValues.getDeathItemsDestroyedPercentage(), worldValues.getWhitelistedItems());
+				}
+				else destroyItems(event.getEntity(), worldValues.getDeathItemsDestroyedFlat(), worldValues.getWhitelistedItems());
 			}
-			else destroyItems(event.getEntity(), worldValues.getDeathItemsDestroyedFlat(), worldValues.getWhitelistedItems());
+			// first check dropped chance
 			// drop items
 			// if flat value is disabled use percentage and only set value if we have a valid percentage
-			if (worldValues.getDeathItemsDroppedFlat() <= 0)
+			if (worldValues.getDeathItemsDroppedChancePercentage() > getChance())
 			{
-				if (worldValues.getDeathItemsDroppedPercentage() <= 1 && worldValues.getDeathItemsDroppedPercentage() > 0) dropItems(event.getEntity(), worldValues.getDeathItemsDroppedPercentage(), worldValues.getWhitelistedItems());
+				if (worldValues.getDeathItemsDroppedFlat() <= 0)
+				{
+					if (worldValues.getDeathItemsDroppedPercentage() <= 1 && worldValues.getDeathItemsDroppedPercentage() > 0) dropItems(event.getEntity(), worldValues.getDeathItemsDroppedPercentage(), worldValues.getWhitelistedItems());
+				}
+				else dropItems(event.getEntity(), worldValues.getDeathItemsDroppedFlat(), worldValues.getWhitelistedItems());
 			}
-			else dropItems(event.getEntity(), worldValues.getDeathItemsDroppedFlat(), worldValues.getWhitelistedItems());
 		}
 		// process commands at death
 		for (String command : worldValues.getDeathProcessedCommands())
@@ -131,6 +141,15 @@ public class DeathPenalties extends JavaPlugin implements Listener
 		}
 	}
 
+	/**
+	 * 
+	 * @return A chance number between 0.0 and 1.0
+	 */
+	private double getChance ()
+	{
+		return this.random.nextDouble();
+	}
+	
 	/**
 	 * Drop items with percentage value in a player inventory (used when keep inventory is enabled)
 	 * @param player The player that has items that need to be dropped
