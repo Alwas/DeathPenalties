@@ -219,7 +219,7 @@ public class DeathPenalties extends JavaPlugin implements Listener
 		for (ItemStack drop : drops) if (isWhitelisted(whitelist, drop.getType())) whitelistedDrops.add(drop);
 		for (ItemStack drop : whitelistedDrops) drops.remove(drop);
 		int count = drops.size() - ((int) (percentage * drops.size()));
-		for (int i = drops.size(); i > count && i > 0; i--) drops.remove((int) (Math.random() * (i + 1)));
+		for (int i = drops.size() - 1; i > count && i > 0; i--) drops.remove((int) (Math.random() * (i + 1)));
 		for (ItemStack drop : whitelistedDrops) drops.add(drop);
 	}
 
@@ -234,7 +234,7 @@ public class DeathPenalties extends JavaPlugin implements Listener
 		for (ItemStack drop : drops) if (isWhitelisted(whitelist, drop.getType())) whitelistedDrops.add(drop);
 		for (ItemStack drop : whitelistedDrops) drops.remove(drop);
 		count = drops.size() - count;
-		for (int i = drops.size(); i > count && i > 0; i--) drops.remove((int) ((Math.random()* (i + 1))));
+		for (int i = drops.size() - 1; i > count && i > 0; i--) drops.remove((int) ((Math.random()* (i + 1))));
 		for (ItemStack drop : whitelistedDrops) drops.add(drop);
 	}
 	
