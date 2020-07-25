@@ -31,7 +31,7 @@ import net.milkbowl.vault.economy.Economy;
 public class DeathPenalties extends JavaPlugin implements Listener
 {
 
-	private final Hashtable<String, DeathPenaltiesWorld> deathPenaltiesWorlds = new Hashtable<String, DeathPenaltiesWorld>();
+	private final Hashtable<String, DeathPenaltiesWorld> deathPenaltiesWorlds = new Hashtable<>();
 	private DeathPenaltiesConfig config;
 	private Economy economy;
 	private Random random = new Random();
@@ -215,7 +215,7 @@ public class DeathPenalties extends JavaPlugin implements Listener
 	 */
 	private void destroyItems (List<ItemStack> drops, double percentage, Material[] whitelist)
 	{
-		LinkedList<ItemStack> whitelistedDrops = new LinkedList<ItemStack>();
+		LinkedList<ItemStack> whitelistedDrops = new LinkedList<>();
 		for (ItemStack drop : drops) if (isWhitelisted(whitelist, drop.getType())) whitelistedDrops.add(drop);
 		for (ItemStack drop : whitelistedDrops) drops.remove(drop);
 		int count = drops.size() - ((int) (percentage * drops.size()));
@@ -230,7 +230,7 @@ public class DeathPenalties extends JavaPlugin implements Listener
 	 */
 	private void destroyItems (List<ItemStack> drops, int count, Material[] whitelist)
 	{
-		LinkedList<ItemStack> whitelistedDrops = new LinkedList<ItemStack>();
+		LinkedList<ItemStack> whitelistedDrops = new LinkedList<>();
 		for (ItemStack drop : drops) if (isWhitelisted(whitelist, drop.getType())) whitelistedDrops.add(drop);
 		for (ItemStack drop : whitelistedDrops) drops.remove(drop);
 		count = drops.size() - count;
@@ -245,7 +245,7 @@ public class DeathPenalties extends JavaPlugin implements Listener
 	 */
 	private Integer[] getInventoryItemsSlots (Inventory inventory, Material[] whitelistedItems)
 	{
-		ArrayList<Integer> slots = new ArrayList<Integer>();
+		ArrayList<Integer> slots = new ArrayList<>();
 		ItemStack[] items = inventory.getContents();
 		for (int i = 0; i < items.length; i++) if (items[i] != null && !(isWhitelisted(whitelistedItems, items[i].getType()))) slots.add(i);
 		return slots.toArray(new Integer[slots.size()]);

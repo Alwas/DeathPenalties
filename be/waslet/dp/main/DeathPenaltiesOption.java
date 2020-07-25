@@ -31,7 +31,7 @@ public enum DeathPenaltiesOption
 	
 	public String getConfigPath ()
 	{
-		return configPath;
+		return this.configPath;
 	}
 	
 	public boolean isValid (String value)
