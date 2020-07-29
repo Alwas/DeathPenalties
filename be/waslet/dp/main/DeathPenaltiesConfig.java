@@ -34,13 +34,13 @@ public class DeathPenaltiesConfig
 			this.mainConfig.load(this.mainConfigFile);
 			this.translationsConfig.load(translationsFile);
 		}
-		catch (IOException e)
+		catch (IOException exc)
 		{
-			e.printStackTrace();
+			exc.printStackTrace();
 		}
-		catch (InvalidConfigurationException e)
+		catch (InvalidConfigurationException exc)
 		{
-			e.printStackTrace();
+			exc.printStackTrace();
 		}
 	}
 
@@ -111,6 +111,7 @@ public class DeathPenaltiesConfig
 				}
 				catch (IllegalArgumentException exc)
 				{
+					exc.printStackTrace();
 					continue;
 				}
 			}
@@ -162,6 +163,7 @@ public class DeathPenaltiesConfig
 			}
 			catch (IllegalArgumentException exc)
 			{
+				exc.printStackTrace();
 				continue;
 			}
 		}
