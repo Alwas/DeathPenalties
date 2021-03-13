@@ -13,47 +13,77 @@
 # for flat values if value <= 0 percentage value is used instead
 # percentage values are ignored if you have set a flat value > 0
 #
+# for inventory values destroyed and dropped values can both be done on player death
+#
 #example_world:
 #  enabled: true
 #  # if enabled death penalties will be applied
 #
 #  respawn-health-flat: 0.0
-#  # health penalized player will respawn with
+#  # health penalised player will respawn with
 #
 #  respawn-food-flat: 0
-#  # food penalized player will respawn with (integer numbers)
+#  # food penalised player will respawn with (integer numbers)
 #
 #  death-money-lost-flat: 10.0
-#  # money penalized player will lose on death
+#  # money penalised player will lose on death
 #
 #  death-items-dropped-flat: 1 (integer numbers)
-#  # items that will be droped from penalized player inventory on death
+#  # items that will be dropped from penalised player inventory on death
 #  # this option only works if keepInventory gamerule is set to true
 #
 #  death-items-destroyed-flat: 1 (integer numbers)
-#  # items that will be destroyed in penalized player inventory on death
+#  # items that will be destroyed in penalised player inventory on death
 #  # this option still applies before the drop option if keepInventory gamerule is set to true
 #
 #  respawn-health-percentage: 0.21
-#  # health penalized player will respawn with in percentage (0.21 is 21 percents)
+#  # health penalised player will respawn with in percentage (0.21 is 21 percents)
 #
 #  respawn-food-percentage: 0.4
-#  # food penalized player will respawn with in percentage
+#  # food penalised player will respawn with in percentage
 #
 #  death-money-lost-percentage: 0.01
-#  # money penalized player will lose on death in percentage
+#  # money penalised player will lose on death in percentage
 #
 #  death-items-dropped-percentage: 0.05
-#  # items that will be dropped from penalized player inventory on death in percentage
+#  # items that will be dropped from penalised player inventory on death in percentage
 #
 #  death-items-dropped-chance-percentage: 0.5
-#  # chance that items will be dropped from penalized player inventory on death in percentage
+#  # chance that items will be dropped from penalised player inventory on death in percentage
 #
 #  death-items-destroyed-percentage: 0.05
-#  # items that will be destroyed in penalized player inventory on death in percentage
+#  # items that will be destroyed in penalised player inventory on death in percentage
 #
 #  death-items-destroyed-chance-percentage: 0.5
-#  # chance that items will be destroyed in penalized player inventory on death in percentage
+#  # chance that items will be destroyed in penalised player inventory on death in percentage
+#
+#  death-experience-dropped-flat: 10.0
+#  # experience that will be dropped from penalised player inventory on death
+#  # this option only works if keepInventory gamerule is set to true
+#
+#  death-experience-dropped-percentage: 0.1
+#  # experience that will be dropped from penalised player inventory on death in percentage
+#
+#  death-experience-dropped-chance-percentage: 0.5
+#  # chance that experience will be dropped from penalised player inventory on death in percentage
+#
+#  death-experience-destroyed-flat: 10.0
+#  # experience that will be destroyed from penalised player inventory on death
+#
+#  death-experience-destroyed-percentage: 0.1
+#  # experience that will be destroyed from penalised player inventory on death in percentage
+#
+#  death-experience-destroyed-chance-percentage: 0.5
+#  # chance that experience will be destroyed from penalised player inventory on death in percentage
+#
+#  death-levels-destroyed-flat: 1 (integer numbers)
+#  # levels that will be destroyed from penalised player inventory on death
+#
+#  death-levels-destroyed-percentage: 0.05
+#  # levels that will be destroyed from penalised player inventory on death in percentage
+#
+#  death-levels-destroyed-chance-percentage: 0.5
+#  # chance that levels will be destroyed from penalised player inventory on death in percentage
 #
 #  whitelisted-items:
 #    - DIAMOND_PICKAXE
@@ -84,6 +114,12 @@
 #
 # values below are examples of use and for testing purpose replace it by your own !
 #
+# !!!!! IF AN OPTION IS NOT WORKING MAKE SURE THAT YOU HAVE A VALUE SET FOR IT !!!!!
+# if you have set a value for each option in default values you do not have to care about it in other ones
+
+bypass-op-permission: false
+# this option is used for op testing purposes
+# set it to true if you want op players to be affected by penalties
 
 default_values:
   enabled: true
@@ -94,6 +130,15 @@ default_values:
   death-items-dropped-chance-percentage: 0.5
   death-items-destroyed-flat: 2
   death-items-destroyed-chance-percentage: 0.5
+  death-experience-dropped-flat: 10
+  death-experience-dropped-percentage: 0.1
+  death-experience-dropped-chance-percentage: 0.5
+  death-experience-destroyed-flat: 10
+  death-experience-destroyed-percentage: 0.1
+  death-experience-destroyed-chance-percentage: 0.5
+  death-levels-destroyed-flat: 1
+  death-levels-destroyed-percentage: 0.05
+  death-levels-destroyed-chance-percentage: 0.5
   whitelisted-items:
     - DIAMOND_PICKAXE
     - DIAMOND_SWORD

@@ -84,6 +84,26 @@ public class DeathPenaltiesEditCommand implements CommandExecutor
 			value = String.valueOf(itemsDestroyedFlat);
 			this.plugin.getDeathPenaltiesConfig().setWorldValue(worldName, option, itemsDestroyedFlat);
 		}
+		else if (option.equals(DeathPenaltiesOption.EXPERIENCE_DROPPED_FLAT))
+		{
+			double experienceDroppedFlat = Double.parseDouble(value);
+			world.setDeathExperienceDroppedFlat(experienceDroppedFlat);
+			this.plugin.getDeathPenaltiesConfig().setWorldValue(worldName, option, experienceDroppedFlat);
+		}
+		else if (option.equals(DeathPenaltiesOption.EXPERIENCE_DESTROYED_FLAT))
+		{
+			double experienceDestroyedFlat = Double.parseDouble(value);
+			world.setDeathExperienceDestroyedFlat(experienceDestroyedFlat);
+			this.plugin.getDeathPenaltiesConfig().setWorldValue(worldName, option, experienceDestroyedFlat);
+		}
+		else if (option.equals(DeathPenaltiesOption.LEVELS_DESTROYED_FLAT))
+		{
+			int levelsDestroyedFlat = (int) Double.parseDouble(value);
+			world.setDeathLevelsDestroyedFlat(levelsDestroyedFlat);
+			// make sure that config writes an integer
+			value = String.valueOf(levelsDestroyedFlat);
+			this.plugin.getDeathPenaltiesConfig().setWorldValue(worldName, option, levelsDestroyedFlat);
+		}
 		else if (option.equals(DeathPenaltiesOption.HEALTH_PERCENTAGE))
 		{
 			double healthPercentage = Double.parseDouble(value);
@@ -140,6 +160,51 @@ public class DeathPenaltiesEditCommand implements CommandExecutor
 			double itemsDestroyedChancePercentage = Double.parseDouble(value);
 			world.setDeathItemsDestroyedChancePercentage(itemsDestroyedChancePercentage);
 			this.plugin.getDeathPenaltiesConfig().setWorldValue(worldName, option, itemsDestroyedChancePercentage);
+		}
+		else if (option.equals(DeathPenaltiesOption.EXPERIENCE_DROPPED_PERCENTAGE))
+		{
+			double experienceDroppedPercentage = Double.parseDouble(value);
+			world.setDeathExperienceDroppedPercentage(experienceDroppedPercentage);
+			this.plugin.getDeathPenaltiesConfig().setWorldValue(worldName, option, experienceDroppedPercentage);
+			// remove flat value to use percentage
+			world.setDeathExperienceDroppedFlat(0);
+			this.plugin.getDeathPenaltiesConfig().setWorldValue(worldName, DeathPenaltiesOption.EXPERIENCE_DROPPED_FLAT, 0);
+		}
+		else if (option.equals(DeathPenaltiesOption.EXPERIENCE_DROPPED_CHANCE_PERCENTAGE))
+		{
+			double experienceDroppedChancePercentage = Double.parseDouble(value);
+			world.setDeathExperienceDroppedChancePercentage(experienceDroppedChancePercentage);
+			this.plugin.getDeathPenaltiesConfig().setWorldValue(worldName, option, experienceDroppedChancePercentage);
+		}
+		else if (option.equals(DeathPenaltiesOption.EXPERIENCE_DESTROYED_PERCENTAGE))
+		{
+			double experienceDestroyedPercentage = Double.parseDouble(value);
+			world.setDeathExperienceDestroyedPercentage(experienceDestroyedPercentage);
+			this.plugin.getDeathPenaltiesConfig().setWorldValue(worldName, option, experienceDestroyedPercentage);
+			// remove flat value to use percentage
+			world.setDeathExperienceDestroyedFlat(0);
+			this.plugin.getDeathPenaltiesConfig().setWorldValue(worldName, DeathPenaltiesOption.EXPERIENCE_DESTROYED_FLAT, 0);
+		}
+		else if (option.equals(DeathPenaltiesOption.EXPERIENCE_DESTROYED_CHANCE_PERCENTAGE))
+		{
+			double experienceDestroyedChancePercentage = Double.parseDouble(value);
+			world.setDeathExperienceDestroyedChancePercentage(experienceDestroyedChancePercentage);
+			this.plugin.getDeathPenaltiesConfig().setWorldValue(worldName, option, experienceDestroyedChancePercentage);
+		}
+		else if (option.equals(DeathPenaltiesOption.LEVELS_DESTROYED_PERCENTAGE))
+		{
+			double levelsDestroyedPercentage = Double.parseDouble(value);
+			world.setDeathLevelsDestroyedPercentage(levelsDestroyedPercentage);
+			this.plugin.getDeathPenaltiesConfig().setWorldValue(worldName, option, levelsDestroyedPercentage);
+			// remove flat value to use percentage
+			world.setDeathLevelsDestroyedFlat(0);
+			this.plugin.getDeathPenaltiesConfig().setWorldValue(worldName, DeathPenaltiesOption.LEVELS_DESTROYED_FLAT, 0);
+		}
+		else if (option.equals(DeathPenaltiesOption.LEVELS_DESTROYED_CHANCE_PERCENTAGE))
+		{
+			double levelsDestroyedChancePercentage = Double.parseDouble(value);
+			world.setDeathLevelsDestroyedChancePercentage(levelsDestroyedChancePercentage);
+			this.plugin.getDeathPenaltiesConfig().setWorldValue(worldName, option, levelsDestroyedChancePercentage);
 		}
 		sender.sendMessage(ChatColor.GREEN + "Option " + ChatColor.DARK_GREEN + option.toString() + ChatColor.GREEN + " has been set to " + ChatColor.YELLOW + value + ChatColor.GREEN + " in world: " + ChatColor.YELLOW + worldName);
 	}

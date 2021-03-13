@@ -2,12 +2,12 @@ name: DeathPenalties
 load: POSTWORLD
 description: DeathPenalties is a plugin from the WaffleProject's plugins collection that is designed to prevent players to abuse from death advantages and even penalize them !
 main: be.waslet.dp.main.DeathPenalties
-version: Release-1.4.4
+version: Release-1.5
 authors: [Whawhatausore]
 website: https://www.waffleproject.com/
 database: false
 api-version: 1.13
-softdepend: [Multiverse-Core, Vault]
+softdepend: [Multiverse-Core, Vault, MobArena]
 permissions:
   dp.ignore:
     description: This permission allows to ignore death penalties

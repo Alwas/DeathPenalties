@@ -21,6 +21,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.garbagemule.MobArena.MobArena;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
 
@@ -33,7 +34,9 @@ public class DeathPenalties extends JavaPlugin implements Listener
 
 	private final Hashtable<String, DeathPenaltiesWorld> deathPenaltiesWorlds = new Hashtable<>();
 	private DeathPenaltiesConfig config;
+	private boolean bypassOpPermission;
 	private Economy economy;
+	private MobArena mobArena;
 	private Random random = new Random();
 
 	@Override
@@ -41,6 +44,7 @@ public class DeathPenalties extends JavaPlugin implements Listener
 	{
 		// config startup
 		this.config = new DeathPenaltiesConfig(this);
+		this.bypassOpPermission = this.config.getBypassOpPermission();
 		// load default values
 		DeathPenaltiesWorld defaultValues = this.config.loadDefaultValues();
 		Plugin multiverse = getServer().getPluginManager().getPlugin("Multiverse-Core");
@@ -61,6 +65,13 @@ public class DeathPenalties extends JavaPlugin implements Listener
 	        if (rsp != null) this.economy = rsp.getProvider();
 	        else getServer().getLogger().log(Level.INFO, "[" + getName() + "] No economy plugins are installed economy penalties will not apply");
 		}
+		// mob arena support
+		Plugin mobArenaPlugin = getServer().getPluginManager().getPlugin("MobArena");
+		if (mobArenaPlugin != null)
+		{
+			this.mobArena = (MobArena) mobArenaPlugin;
+			getServer().getLogger().log(Level.INFO, "[" + getName() + "] MobArena found: disabling death penalties for arenas");
+		}
 		// commands executors
 		getCommand("dpstate").setExecutor(new DeathPenaltiesStateCommand(this));
 		getCommand("dpedit").setExecutor(new DeathPenaltiesEditCommand(this));
@@ -73,7 +84,22 @@ public class DeathPenalties extends JavaPlugin implements Listener
 	{
 		DeathPenaltiesWorld worldValues = getDeathPenaltiesWorld(event.getPlayer().getWorld().getName());
 		// apply penalties if we can
-		if (!worldValues.isEnabled() || event.getPlayer().hasPermission("dp.ignore")) return;
+		if (worldValues.isEnabled())
+		{
+			if (this.mobArena != null)
+			{
+				for (Player player : this.mobArena.getArenaMaster().getAllPlayers())
+				{
+					if (event.getPlayer().getUniqueId().equals(player.getUniqueId())) return;
+				}
+			}
+			if (event.getPlayer().isOp())
+			{
+				if (!this.bypassOpPermission) return;
+			}
+			else if (event.getPlayer().hasPermission("dp.ignore")) return;
+		}
+		else return;
 		// apply health and foot penalties 1s later when player has finished respawning
 		new DeathPenaltiesRunnable(event.getPlayer(), worldValues).runTaskLater(this, 20);
 	}
@@ -83,7 +109,22 @@ public class DeathPenalties extends JavaPlugin implements Listener
 	{
 		DeathPenaltiesWorld worldValues = getDeathPenaltiesWorld(event.getEntity().getWorld().getName());
 		// apply penalties if we can
-		if (!worldValues.isEnabled() || event.getEntity().hasPermission("dp.ignore")) return;
+		if (worldValues.isEnabled())
+		{
+			if (this.mobArena != null)
+			{
+				for (Player player : this.mobArena.getArenaMaster().getAllPlayers())
+				{
+					if (event.getEntity().getUniqueId().equals(player.getUniqueId())) return;
+				}
+			}
+			if (event.getEntity().isOp())
+			{
+				if (!this.bypassOpPermission) return;
+			}
+			else if (event.getEntity().hasPermission("dp.ignore")) return;
+		}
+		else return;
 		// check if money is active and player has account and then apply money penalties
 		if (this.economy != null && this.economy.hasAccount(event.getEntity()))
 		{
@@ -98,14 +139,37 @@ public class DeathPenalties extends JavaPlugin implements Listener
 		// if keep inventory is not set only destroy items else destroy items then drop
 		if (!event.getKeepInventory())
 		{
+			// first check destroyed chance
 			// use destroy items functions with drops list
 			// if flat value is disabled use percentage and only set value if we have a valid percentage
-			if (worldValues.getDeathItemsDestroyedFlat() <= 0)
+			if (worldValues.getDeathItemsDestroyedChancePercentage() > getChance())
 			{
-				if (worldValues.getDeathItemsDestroyedPercentage() <= 1 && worldValues.getDeathItemsDestroyedPercentage() > 0) destroyItems(event.getDrops(), worldValues.getDeathItemsDestroyedPercentage(), worldValues.getWhitelistedItems());
+				if (worldValues.getDeathItemsDestroyedFlat() <= 0)
+				{
+					if (worldValues.getDeathItemsDestroyedPercentage() <= 1 && worldValues.getDeathItemsDestroyedPercentage() > 0) destroyItems(event.getDrops(), worldValues.getDeathItemsDestroyedPercentage(), worldValues.getWhitelistedItems());
+				}
+				else destroyItems(event.getDrops(), worldValues.getDeathItemsDestroyedFlat(), worldValues.getWhitelistedItems());
 			}
-			else destroyItems(event.getDrops(), worldValues.getDeathItemsDestroyedFlat(), worldValues.getWhitelistedItems());
+			// experience
+			if (worldValues.getDeathExperienceDestroyedChancePercentage() > getChance())
+			{
+				if (worldValues.getDeathExperienceDestroyedFlat() <= 0)
+				{
+					if (worldValues.getDeathExperienceDestroyedPercentage() <= 1 && worldValues.getDeathExperienceDestroyedPercentage() > 0) event.getEntity().setTotalExperience(event.getEntity().getTotalExperience() - (int) (event.getEntity().getTotalExperience() * worldValues.getDeathExperienceDestroyedPercentage()));
+				}
+				else event.getEntity().setTotalExperience((int) (event.getEntity().getTotalExperience() - worldValues.getDeathExperienceDestroyedFlat()));
+			}
+			// levels
+			if (worldValues.getDeathLevelsDestroyedChancePercentage() > getChance())
+			{
+				if (worldValues.getDeathLevelsDestroyedFlat() <= 0)
+				{
+					if (worldValues.getDeathLevelsDestroyedPercentage() <= 1 && worldValues.getDeathLevelsDestroyedPercentage() > 0) event.getEntity().setLevel(event.getEntity().getLevel() - (int) (event.getEntity().getLevel() * worldValues.getDeathLevelsDestroyedPercentage()));
+				}
+				else event.getEntity().setLevel(event.getEntity().getLevel() - worldValues.getDeathLevelsDestroyedFlat());
+			}
 		}
+		// keep inventory = true
 		else
 		{
 			// first check destroyed chance
@@ -119,6 +183,24 @@ public class DeathPenalties extends JavaPlugin implements Listener
 				}
 				else destroyItems(event.getEntity(), worldValues.getDeathItemsDestroyedFlat(), worldValues.getWhitelistedItems());
 			}
+			// experience
+			if (worldValues.getDeathExperienceDestroyedChancePercentage() > getChance())
+			{
+				if (worldValues.getDeathExperienceDestroyedFlat() <= 0)
+				{
+					if (worldValues.getDeathExperienceDestroyedPercentage() <= 1 && worldValues.getDeathExperienceDestroyedPercentage() > 0) event.getEntity().setTotalExperience(event.getEntity().getTotalExperience() - (int) (event.getEntity().getTotalExperience() * worldValues.getDeathExperienceDestroyedPercentage()));
+				}
+				else event.getEntity().setTotalExperience((int) (event.getEntity().getTotalExperience() - worldValues.getDeathExperienceDestroyedFlat()));
+			}
+			// levels
+			if (worldValues.getDeathLevelsDestroyedChancePercentage() > getChance())
+			{
+				if (worldValues.getDeathLevelsDestroyedFlat() <= 0)
+				{
+					if (worldValues.getDeathLevelsDestroyedPercentage() <= 1 && worldValues.getDeathLevelsDestroyedPercentage() > 0) event.getEntity().setLevel(event.getEntity().getLevel() - (int) (event.getEntity().getLevel() * worldValues.getDeathLevelsDestroyedPercentage()));
+				}
+				else event.getEntity().setLevel(event.getEntity().getLevel() - worldValues.getDeathLevelsDestroyedFlat());
+			}
 			// first check dropped chance
 			// drop items
 			// if flat value is disabled use percentage and only set value if we have a valid percentage
@@ -129,6 +211,15 @@ public class DeathPenalties extends JavaPlugin implements Listener
 					if (worldValues.getDeathItemsDroppedPercentage() <= 1 && worldValues.getDeathItemsDroppedPercentage() > 0) dropItems(event.getEntity(), worldValues.getDeathItemsDroppedPercentage(), worldValues.getWhitelistedItems());
 				}
 				else dropItems(event.getEntity(), worldValues.getDeathItemsDroppedFlat(), worldValues.getWhitelistedItems());
+			}
+			// experience
+			if (worldValues.getDeathExperienceDroppedChancePercentage() > getChance())
+			{
+				if (worldValues.getDeathExperienceDroppedFlat() <= 0)
+				{
+					if (worldValues.getDeathExperienceDroppedPercentage() <= 1 && worldValues.getDeathExperienceDroppedPercentage() > 0) event.getEntity().setTotalExperience(event.getEntity().getTotalExperience() - (int) (event.getEntity().getTotalExperience() * worldValues.getDeathExperienceDroppedPercentage()));
+				}
+				else event.getEntity().setTotalExperience((int) (event.getEntity().getTotalExperience() - worldValues.getDeathExperienceDroppedFlat()));
 			}
 		}
 		// process commands at death
