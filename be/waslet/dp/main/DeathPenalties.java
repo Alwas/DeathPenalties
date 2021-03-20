@@ -21,7 +21,12 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.garbagemule.MobArena.ArenaPlayer;
 import com.garbagemule.MobArena.MobArena;
+import com.garbagemule.MobArena.events.ArenaPlayerDeathEvent;
+import com.garbagemule.MobArena.events.ArenaPlayerJoinEvent;
+import com.garbagemule.MobArena.events.ArenaPlayerLeaveEvent;
+import com.garbagemule.MobArena.framework.Arena;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
 
@@ -38,6 +43,7 @@ public class DeathPenalties extends JavaPlugin implements Listener
 	private Economy economy;
 	private MobArena mobArena;
 	private Random random = new Random();
+	private ArrayList<String> arenaPlayersUUIDs;
 
 	@Override
 	public void onEnable ()
@@ -57,6 +63,7 @@ public class DeathPenalties extends JavaPlugin implements Listener
 			getServer().getLogger().log(Level.INFO, "[" + getName() + "] Multiverse found: looking for mv worlds");
 			for (MultiverseWorld world : ((MultiverseCore) multiverse).getCore().getMVWorldManager().getMVWorlds()) this.config.loadWorldConfiguration(world.getName(), defaultValues);
 		}
+		getServer().getLogger().log(Level.INFO, "[" + getName() + "] All worlds are loaded. Found " + this.deathPenaltiesWorlds.size() + " worlds configs");
 		// if vault is installed link it and activate economy death penalties if economy plugin detected
 		if (getServer().getPluginManager().getPlugin("Vault") != null)
 		{
@@ -70,6 +77,7 @@ public class DeathPenalties extends JavaPlugin implements Listener
 		if (mobArenaPlugin != null)
 		{
 			this.mobArena = (MobArena) mobArenaPlugin;
+			this.arenaPlayersUUIDs = new ArrayList<>();
 			getServer().getLogger().log(Level.INFO, "[" + getName() + "] MobArena found: disabling death penalties for arenas");
 		}
 		// commands executors
@@ -86,12 +94,9 @@ public class DeathPenalties extends JavaPlugin implements Listener
 		// apply penalties if we can
 		if (worldValues.isEnabled())
 		{
-			if (this.mobArena != null)
+			if (this.mobArena != null && this.arenaPlayersUUIDs.contains(event.getPlayer().getUniqueId().toString()))
 			{
-				for (Player player : this.mobArena.getArenaMaster().getAllPlayers())
-				{
-					if (event.getPlayer().getUniqueId().equals(player.getUniqueId())) return;
-				}
+				return;
 			}
 			if (event.getPlayer().isOp())
 			{
@@ -111,12 +116,9 @@ public class DeathPenalties extends JavaPlugin implements Listener
 		// apply penalties if we can
 		if (worldValues.isEnabled())
 		{
-			if (this.mobArena != null)
+			if (this.mobArena != null && this.arenaPlayersUUIDs.contains(event.getEntity().getUniqueId().toString()))
 			{
-				for (Player player : this.mobArena.getArenaMaster().getAllPlayers())
-				{
-					if (event.getEntity().getUniqueId().equals(player.getUniqueId())) return;
-				}
+				return;
 			}
 			if (event.getEntity().isOp())
 			{
@@ -131,10 +133,16 @@ public class DeathPenalties extends JavaPlugin implements Listener
 			// if flat value is disabled use percentage and only set value if we have a valid percentage
 			if (worldValues.getDeathMoneyLostFlat() <= 0)
 			{
-				if (worldValues.getDeathMoneyLostPercentage() <= 1 && worldValues.getDeathMoneyLostPercentage() > 0) this.economy.withdrawPlayer(event.getEntity(), this.economy.getBalance(event.getEntity()) * worldValues.getDeathMoneyLostPercentage());
+				if (worldValues.getDeathMoneyLostPercentage() <= 1 && worldValues.getDeathMoneyLostPercentage() > 0)
+				{
+					this.economy.withdrawPlayer(event.getEntity(), this.economy.getBalance(event.getEntity()) * worldValues.getDeathMoneyLostPercentage());
+				}
 			}
 			// updating player with flat value
-			else this.economy.withdrawPlayer(event.getEntity(), worldValues.getDeathMoneyLostFlat());
+			else
+			{
+				this.economy.withdrawPlayer(event.getEntity(), worldValues.getDeathMoneyLostFlat());
+			}
 		}
 		// if keep inventory is not set only destroy items else destroy items then drop
 		if (!event.getKeepInventory())
@@ -230,6 +238,23 @@ public class DeathPenalties extends JavaPlugin implements Listener
 			if (data[0].equalsIgnoreCase("server")) event.getEntity().getServer().dispatchCommand(event.getEntity().getServer().getConsoleSender(), data[1].replace("%player%", event.getEntity().getName()));
 			else if (data[0].equalsIgnoreCase("player")) event.getEntity().performCommand(data[1].replace("%player%", event.getEntity().getName()));
 		}
+	}
+
+	/*
+	 * MOB ARENA MANAGMENT
+	 * since mob arena plugin arena managers players functions does not seem to be working we will use the event system to keep track of in arena players
+	 */
+	
+	@EventHandler (priority = EventPriority.NORMAL)
+	public void onPlayerJoinsArena (ArenaPlayerJoinEvent event)
+	{
+		this.arenaPlayersUUIDs.add(event.getPlayer().getUniqueId().toString());
+	}
+
+	@EventHandler (priority = EventPriority.NORMAL)
+	public void onPlayerLeavesArena (ArenaPlayerLeaveEvent event)
+	{
+		this.arenaPlayersUUIDs.remove(event.getPlayer().getUniqueId().toString());
 	}
 
 	/**

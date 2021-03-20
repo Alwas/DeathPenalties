@@ -48,25 +48,34 @@ public class DeathPenaltiesStateCommand implements CommandExecutor
 
 	private static String getStateMessage (DeathPenaltiesWorld world, String worldName)
 	{
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 		buffer.append(ChatColor.GREEN).append("--------------------\n");
 		buffer.append("Death penalties are currently ").append(ChatColor.DARK_GREEN).append(((world.isEnabled()) ? "enabled" : "disabled")).append(ChatColor.GREEN).append(" in world: ").append(ChatColor.YELLOW).append(worldName).append(ChatColor.GREEN).append("\n");
 		buffer.append("--------------------\n");
 		if (world.isEnabled())
 		{
 			buffer.append("Players penalties there are:\n");
-			buffer.append("- ").append((world.getRespawnHealthFlat() > 0) ? buffer.append(ChatColor.YELLOW).append(world.getRespawnHealthFlat()).append(ChatColor.GREEN).append(" health (flat)") : buffer.append(ChatColor.YELLOW).append(world.getRespawnHealthPercentage()).append(ChatColor.GREEN).append(" health (percentage)")).append("\n");
-			buffer.append("- ").append((world.getRespawnFoodFlat() > 0) ? buffer.append(ChatColor.YELLOW).append(world.getRespawnFoodFlat()).append(ChatColor.GREEN).append(" food (flat)") : buffer.append(ChatColor.YELLOW).append(world.getRespawnFoodPercentage()).append(ChatColor.GREEN).append(" food (percentage)")).append("\n");
-			buffer.append("- ").append((world.getDeathMoneyLostFlat() > 0) ? buffer.append(ChatColor.YELLOW).append(world.getDeathMoneyLostFlat()).append(ChatColor.GREEN).append(" money lost (flat)") : buffer.append(ChatColor.YELLOW).append(world.getDeathMoneyLostPercentage()).append(ChatColor.GREEN).append(" money lost (percentage)")).append("\n");
-			buffer.append("- ").append((world.getDeathItemsDroppedFlat() > 0) ? buffer.append(ChatColor.YELLOW).append(world.getDeathItemsDroppedFlat()).append(ChatColor.GREEN).append(" items dropped (flat)") : buffer.append(ChatColor.YELLOW).append(world.getDeathItemsDroppedPercentage()).append(ChatColor.GREEN).append(" items dropped (percentage)")).append("\n");
+			
+			if (world.getRespawnHealthFlat() > 0) buffer.append("- ").append(ChatColor.YELLOW).append(world.getRespawnHealthFlat()).append(ChatColor.GREEN).append(" health (flat)").append("\n");
+			else buffer.append("- ").append(ChatColor.YELLOW).append(world.getRespawnHealthPercentage()).append(ChatColor.GREEN).append(" health (percentage)").append("\n");
+			if (world.getRespawnFoodFlat() > 0) buffer.append("- ").append(ChatColor.YELLOW).append(world.getRespawnFoodFlat()).append(ChatColor.GREEN).append(" food (flat)").append("\n");
+			else buffer.append("- ").append(ChatColor.YELLOW).append(world.getRespawnFoodPercentage()).append(ChatColor.GREEN).append(" food (percentage)").append("\n");
+			if (world.getDeathMoneyLostFlat() > 0) buffer.append("- ").append(ChatColor.YELLOW).append(world.getDeathMoneyLostFlat()).append(ChatColor.GREEN).append(" money lost (flat)").append("\n");
+			else buffer.append("- ").append(ChatColor.YELLOW).append(world.getDeathMoneyLostPercentage()).append(ChatColor.GREEN).append(" money lost (percentage)").append("\n");
+			if (world.getDeathItemsDroppedFlat() > 0) buffer.append("- ").append(ChatColor.YELLOW).append(world.getDeathItemsDroppedFlat()).append(ChatColor.GREEN).append(" items dropped (flat)").append("\n");
+			else buffer.append("- ").append(ChatColor.YELLOW).append(world.getDeathItemsDroppedPercentage()).append(ChatColor.GREEN).append(" items dropped (percentage)").append("\n");
 			buffer.append("- ").append(ChatColor.YELLOW).append(world.getDeathItemsDroppedChancePercentage()).append(ChatColor.GREEN).append(" items dropped chance (percentage)\n");
-			buffer.append("- ").append((world.getDeathItemsDestroyedFlat() > 0) ? buffer.append(ChatColor.YELLOW).append(world.getDeathItemsDestroyedFlat()).append(ChatColor.GREEN).append(" items destroyed (flat)") : buffer.append(ChatColor.YELLOW).append(world.getDeathItemsDestroyedPercentage()).append(ChatColor.GREEN).append(" items destroyed (percentage)")).append("\n");
+			if (world.getDeathItemsDestroyedFlat() > 0) buffer.append("- ").append(ChatColor.YELLOW).append(world.getDeathItemsDestroyedFlat()).append(ChatColor.GREEN).append(" items destroyed (flat)").append("\n");
+			else buffer.append("- ").append(ChatColor.YELLOW).append(world.getDeathItemsDestroyedPercentage()).append(ChatColor.GREEN).append(" items destroyed (percentage)").append("\n");
 			buffer.append("- ").append(ChatColor.YELLOW).append(world.getDeathItemsDestroyedChancePercentage()).append(ChatColor.GREEN).append(" items destroyed chance (percentage)\n");
-			buffer.append("- ").append((world.getDeathExperienceDroppedFlat() > 0) ? buffer.append(ChatColor.YELLOW).append(world.getDeathExperienceDroppedFlat()).append(ChatColor.GREEN).append(" experience dropped (flat)") : buffer.append(ChatColor.YELLOW).append(world.getDeathExperienceDroppedPercentage()).append(ChatColor.GREEN).append(" experience dropped (percentage)")).append("\n");
+			if (world.getDeathExperienceDroppedFlat() > 0) buffer.append("- ").append(ChatColor.YELLOW).append(world.getDeathExperienceDroppedFlat()).append(ChatColor.GREEN).append(" experience dropped (flat)").append("\n");
+			else buffer.append("- ").append(ChatColor.YELLOW).append(world.getDeathExperienceDroppedPercentage()).append(ChatColor.GREEN).append(" experience dropped (percentage)").append("\n");
 			buffer.append("- ").append(ChatColor.YELLOW).append(world.getDeathExperienceDroppedChancePercentage()).append(ChatColor.GREEN).append(" experience dropped chance (percentage)\n");
-			buffer.append("- ").append((world.getDeathExperienceDestroyedFlat() > 0) ? buffer.append(ChatColor.YELLOW).append(world.getDeathExperienceDestroyedFlat()).append(ChatColor.GREEN).append(" experience destroyed (flat)") : buffer.append(ChatColor.YELLOW).append(world.getDeathExperienceDestroyedPercentage()).append(ChatColor.GREEN).append(" experience destroyed (percentage)")).append("\n");
+			if (world.getDeathExperienceDestroyedFlat() > 0) buffer.append("- ").append(ChatColor.YELLOW).append(world.getDeathExperienceDestroyedFlat()).append(ChatColor.GREEN).append(" experience destroyed (flat)").append("\n");
+			else buffer.append("- ").append(ChatColor.YELLOW).append(world.getDeathExperienceDestroyedPercentage()).append(ChatColor.GREEN).append(" experience destroyed (percentage)").append("\n");
 			buffer.append("- ").append(ChatColor.YELLOW).append(world.getDeathExperienceDestroyedChancePercentage()).append(ChatColor.GREEN).append(" experience destroyed chance (percentage)\n");
-			buffer.append("- ").append((world.getDeathLevelsDestroyedFlat() > 0) ? buffer.append(ChatColor.YELLOW).append(world.getDeathLevelsDestroyedFlat()).append(ChatColor.GREEN).append(" levels destroyed (flat)") : buffer.append(ChatColor.YELLOW).append(world.getDeathLevelsDestroyedPercentage()).append(ChatColor.GREEN).append(" levels destroyed (percentage)")).append("\n");
+			if (world.getDeathLevelsDestroyedFlat() > 0) buffer.append("- ").append(ChatColor.YELLOW).append(world.getDeathLevelsDestroyedFlat()).append(ChatColor.GREEN).append(" levels destroyed (flat)").append("\n");
+			else buffer.append("- ").append(ChatColor.YELLOW).append(world.getDeathLevelsDestroyedPercentage()).append(ChatColor.GREEN).append(" levels destroyed (percentage)").append("\n");
 			buffer.append("- ").append(ChatColor.YELLOW).append(world.getDeathLevelsDestroyedChancePercentage()).append(ChatColor.GREEN).append(" levels destroyed chance (percentage)\n");
 			buffer.append("- Whitelisted items:\n");
 			if (world.getWhitelistedItems().length == 0) buffer.append("- No items whitelisted\n");
