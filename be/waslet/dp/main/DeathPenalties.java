@@ -9,6 +9,7 @@ import java.util.logging.Level;
 
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -21,12 +22,9 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.garbagemule.MobArena.ArenaPlayer;
 import com.garbagemule.MobArena.MobArena;
-import com.garbagemule.MobArena.events.ArenaPlayerDeathEvent;
 import com.garbagemule.MobArena.events.ArenaPlayerJoinEvent;
 import com.garbagemule.MobArena.events.ArenaPlayerLeaveEvent;
-import com.garbagemule.MobArena.framework.Arena;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
 
@@ -128,20 +126,30 @@ public class DeathPenalties extends JavaPlugin implements Listener
 		}
 		else return;
 		// check if money is active and player has account and then apply money penalties
-		if (this.economy != null && this.economy.hasAccount(event.getEntity()))
+		if (this.economy != null && this.economy.hasAccount(event.getEntity()) && worldValues.getDeathMoneyLostChancePercentage() > getChance())
 		{
 			// if flat value is disabled use percentage and only set value if we have a valid percentage
 			if (worldValues.getDeathMoneyLostFlat() <= 0)
 			{
 				if (worldValues.getDeathMoneyLostPercentage() <= 1 && worldValues.getDeathMoneyLostPercentage() > 0)
 				{
-					this.economy.withdrawPlayer(event.getEntity(), this.economy.getBalance(event.getEntity()) * worldValues.getDeathMoneyLostPercentage());
+					double lostMoneyAmount = this.economy.getBalance(event.getEntity()) * worldValues.getDeathMoneyLostPercentage();
+					this.economy.withdrawPlayer(event.getEntity(), lostMoneyAmount);
+					if (worldValues.hasMoneyLostBankAccount() && this.economy.hasBankSupport())
+					{
+						this.economy.bankDeposit(worldValues.getMoneyLostBankAccount(), lostMoneyAmount);
+					}
 				}
 			}
 			// updating player with flat value
 			else
 			{
-				this.economy.withdrawPlayer(event.getEntity(), worldValues.getDeathMoneyLostFlat());
+				double lostMoneyAmount = worldValues.getDeathMoneyLostFlat();
+				this.economy.withdrawPlayer(event.getEntity(), lostMoneyAmount);
+				if (worldValues.hasMoneyLostBankAccount() && this.economy.hasBankSupport())
+				{
+					this.economy.bankDeposit(worldValues.getMoneyLostBankAccount(), lostMoneyAmount);
+				}
 			}
 		}
 		// if keep inventory is not set only destroy items else destroy items then drop
@@ -187,9 +195,9 @@ public class DeathPenalties extends JavaPlugin implements Listener
 			{
 				if (worldValues.getDeathItemsDestroyedFlat() <= 0)
 				{
-					if (worldValues.getDeathItemsDestroyedPercentage() <= 1 && worldValues.getDeathItemsDestroyedPercentage() > 0) destroyItems(event.getEntity(), worldValues.getDeathItemsDestroyedPercentage(), worldValues.getWhitelistedItems());
+					if (worldValues.getDeathItemsDestroyedPercentage() <= 1 && worldValues.getDeathItemsDestroyedPercentage() > 0) destroyItems(event.getEntity(), worldValues.getDeathItemsDestroyedPercentage(), getInventoryItemsSlots(event.getEntity().getInventory(), worldValues.getWhitelistedItems()));
 				}
-				else destroyItems(event.getEntity(), worldValues.getDeathItemsDestroyedFlat(), worldValues.getWhitelistedItems());
+				else destroyItems(event.getEntity(), worldValues.getDeathItemsDestroyedFlat(), getInventoryItemsSlots(event.getEntity().getInventory(), worldValues.getWhitelistedItems()));
 			}
 			// experience
 			if (worldValues.getDeathExperienceDestroyedChancePercentage() > getChance())
@@ -216,9 +224,9 @@ public class DeathPenalties extends JavaPlugin implements Listener
 			{
 				if (worldValues.getDeathItemsDroppedFlat() <= 0)
 				{
-					if (worldValues.getDeathItemsDroppedPercentage() <= 1 && worldValues.getDeathItemsDroppedPercentage() > 0) dropItems(event.getEntity(), worldValues.getDeathItemsDroppedPercentage(), worldValues.getWhitelistedItems());
+					if (worldValues.getDeathItemsDroppedPercentage() <= 1 && worldValues.getDeathItemsDroppedPercentage() > 0) dropItems(event.getEntity(), worldValues.getDeathItemsDroppedPercentage(), getInventoryItemsSlots(event.getEntity().getInventory(), worldValues.getWhitelistedItems()));
 				}
-				else dropItems(event.getEntity(), worldValues.getDeathItemsDroppedFlat(), worldValues.getWhitelistedItems());
+				else dropItems(event.getEntity(), worldValues.getDeathItemsDroppedFlat(), getInventoryItemsSlots(event.getEntity().getInventory(), worldValues.getWhitelistedItems()));
 			}
 			// experience
 			if (worldValues.getDeathExperienceDroppedChancePercentage() > getChance())
@@ -270,27 +278,24 @@ public class DeathPenalties extends JavaPlugin implements Listener
 	 * Drop items with percentage value in a player inventory (used when keep inventory is enabled)
 	 * @param player The player that has items that need to be dropped
 	 * @param percentage The number of items to drop in percentage value
+	 * @param itemsSlots Slots of the player inventory that contains items
 	 */
-	private void dropItems (Player player, double percentage, Material[] whitelist)
+	private void dropItems (Player player, double percentage, Integer[] itemsSlots)
 	{
-		Integer[] itemsSlots = getInventoryItemsSlots(player.getInventory(), whitelist);
-		int count = (int) (percentage * itemsSlots.length);
-		int[] randomArray = getShuffledIntArray(itemsSlots.length);
-		for (int i = 0; i < count && i < itemsSlots.length; i++)
-		{
-			player.getWorld().dropItemNaturally(player.getLocation(), player.getInventory().getContents()[itemsSlots[randomArray[i]]]);
-			player.getInventory().setItem(itemsSlots[randomArray[i]], null);
-		}
+		if (percentage <= 0.0) return;
+		int count = Math.max(1, (int) (percentage * itemsSlots.length));
+		dropItems(player, count, itemsSlots);
 	}
 
 	/**
 	 * Drop items with percentage value in a player inventory (used when keep inventory is enabled)
 	 * @param player The player that has items that need to be dropped
 	 * @param count The number of items to drop
+	 * @param itemsSlots Slots of the player inventory that contains items
 	 */
-	private void dropItems (Player player, int count, Material[] whitelist)
+	private void dropItems (Player player, int count, Integer[] itemsSlots)
 	{
-		Integer[] itemsSlots = getInventoryItemsSlots(player.getInventory(), whitelist);
+		if (count <= 0) return;
 		int[] randomArray = getShuffledIntArray(itemsSlots.length);
 		for (int i = 0; i < count && i < itemsSlots.length; i++)
 		{
@@ -303,25 +308,29 @@ public class DeathPenalties extends JavaPlugin implements Listener
 	 * Destroy items with percentage value in a player inventory (used when keep inventory is enabled)
 	 * @param player The player that has items that need to be removed
 	 * @param percentage The number of items to remove in percentage value
+	 * @param itemsSlots Slots of the player inventory that contains items
 	 */
-	private void destroyItems (Player player, double percentage, Material[] whitelist)
+	private void destroyItems (Player player, double percentage, Integer[] itemsSlots)
 	{
-		Integer[] itemsSlots = getInventoryItemsSlots(player.getInventory(), whitelist);
-		int count = (int) (percentage * itemsSlots.length);
-		int[] randomArray = getShuffledIntArray(itemsSlots.length);
-		for (int i = 0; i < count && i < itemsSlots.length; i++) player.getInventory().setItem(itemsSlots[randomArray[i]], null);
+		if (percentage <= 0.0) return;
+		int count = Math.max(1, (int) (percentage * itemsSlots.length));
+		destroyItems(player, count, itemsSlots);
 	}
 
 	/**
 	 * Destroy items with percentage value in a player inventory (used when keep inventory is enabled)
 	 * @param player The player that has items that need to be removed
 	 * @param count The number of items to remove
+	 * @param itemsSlots Slots of the player inventory that contains items
 	 */
-	private void destroyItems (Player player, int count, Material[] whitelist)
+	private void destroyItems (Player player, int count, Integer[] itemsSlots)
 	{
-		Integer[] itemsSlots = getInventoryItemsSlots(player.getInventory(), whitelist);
+		if (count <= 0) return;
 		int[] randomArray = getShuffledIntArray(itemsSlots.length);
-		for (int i = 0; i < count && i < itemsSlots.length; i++) player.getInventory().setItem(itemsSlots[randomArray[i]], null);
+		for (int i = 0; i < count && i < itemsSlots.length; i++)
+		{
+			player.getInventory().setItem(itemsSlots[randomArray[i]], null);
+		}
 	}
 
 	/**
@@ -331,12 +340,9 @@ public class DeathPenalties extends JavaPlugin implements Listener
 	 */
 	private void destroyItems (List<ItemStack> drops, double percentage, Material[] whitelist)
 	{
-		LinkedList<ItemStack> whitelistedDrops = new LinkedList<>();
-		for (ItemStack drop : drops) if (isWhitelisted(whitelist, drop.getType())) whitelistedDrops.add(drop);
-		for (ItemStack drop : whitelistedDrops) drops.remove(drop);
-		int count = drops.size() - ((int) (percentage * drops.size()));
-		for (int i = drops.size() - 1; i > count && i > 0; i--) drops.remove((int) (Math.random() * (i + 1)));
-		for (ItemStack drop : whitelistedDrops) drops.add(drop);
+		if (percentage <= 0.0) return;
+		int count = Math.max(1, (int) (percentage * drops.size()));
+		destroyItems(drops, count, whitelist);
 	}
 
 	/**
@@ -346,11 +352,18 @@ public class DeathPenalties extends JavaPlugin implements Listener
 	 */
 	private void destroyItems (List<ItemStack> drops, int count, Material[] whitelist)
 	{
+		if (count <= 0) return;
 		LinkedList<ItemStack> whitelistedDrops = new LinkedList<>();
-		for (ItemStack drop : drops) if (isWhitelisted(whitelist, drop.getType())) whitelistedDrops.add(drop);
+		for (ItemStack drop : drops)
+		{
+			if (isWhitelisted(whitelist, drop.getType())) whitelistedDrops.add(drop);
+		}
 		for (ItemStack drop : whitelistedDrops) drops.remove(drop);
-		count = drops.size() - count;
-		for (int i = drops.size() - 1; i > count && i > 0; i--) drops.remove((int) ((Math.random()* (i + 1))));
+		int itemsToRemoveCount = drops.size() - count;
+		for (int i = drops.size() - 1; i > itemsToRemoveCount && i > 0; i--)
+		{
+			drops.remove((int) ((this.random.nextDouble() * (i + 1))));
+		}
 		for (ItemStack drop : whitelistedDrops) drops.add(drop);
 	}
 	
@@ -363,7 +376,33 @@ public class DeathPenalties extends JavaPlugin implements Listener
 	{
 		ArrayList<Integer> slots = new ArrayList<>();
 		ItemStack[] items = inventory.getContents();
-		for (int i = 0; i < items.length; i++) if (items[i] != null && !(isWhitelisted(whitelistedItems, items[i].getType()))) slots.add(i);
+		for (int i = 0; i < items.length; i++)
+		{
+			if (items[i] != null)
+			{
+				boolean hasVanishingCurse = false;
+				for (Enchantment enchantment : items[i].getEnchantments().keySet())
+				{
+					if (enchantment.equals(Enchantment.VANISHING_CURSE))
+					{
+						hasVanishingCurse = true;
+						break;
+					}
+				}
+				// if we have an enchant that is curse of vanishing we must remove it
+				// because we are either dropping or destroying items if we are here
+				// we can then go to the next item because we have nothing more to do here since the item is now gone
+				if (hasVanishingCurse)
+				{
+					inventory.setItem(i, null);
+					continue;
+				}
+				if (!(isWhitelisted(whitelistedItems, items[i].getType())))
+				{
+					slots.add(i);
+				}
+			}
+		}
 		return slots.toArray(new Integer[slots.size()]);
 	}
 	

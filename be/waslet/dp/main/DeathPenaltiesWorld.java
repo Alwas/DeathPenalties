@@ -21,10 +21,13 @@ public class DeathPenaltiesWorld
 	private int deathLevelsDestroyedFlat;
 	// PERCENTAGE VALUES
 	private double respawnHealthPercentage;
+	private double respawnHealthChancePercentage;
 	
 	private double respawnFoodPercentage;
+	private double respawnFoodChancePercentage;
 	
 	private double deathMoneyLostPercentage;
+	private double deathMoneyLostChancePercentage;
 	
 	private double deathItemsDroppedPercentage;
 	private double deathItemsDroppedChancePercentage;
@@ -38,6 +41,8 @@ public class DeathPenaltiesWorld
 	private double deathExperienceDestroyedChancePercentage;
 	private double deathLevelsDestroyedPercentage;
 	private double deathLevelsDestroyedChancePercentage;
+	
+	private String moneyLostBankAccount;
 	// OTHERS
 	private Material[] whitelistedItems;
 	private String[] respawnProcessedCommands;
@@ -46,14 +51,17 @@ public class DeathPenaltiesWorld
 	public DeathPenaltiesWorld (boolean enabled, double respawnHealthFlat, int respawnFoodFlat,
 			double deathMoneyLostFlat, int deathItemsDroppedFlat, int deathItemsDestroyedFlat,
 			double deathExperienceDroppedFlat, double deathExperienceDestroyedFlat, int deathLevelsDestroyedFlat,
-			double respawnHealthPercentage, double respawnFoodPercentage, double deathMoneyLostPercentage,
+			double respawnHealthPercentage, double respawnHealthChancePercentage, double respawnFoodPercentage,
+			double respawnFoodChancePercentage, double deathMoneyLostPercentage, double deathMoneyLostChancePercentage,
 			double deathItemsDroppedPercentage, double deathItemsDroppedChancePercentage,
 			double deathItemsDestroyedPercentage, double deathItemsDestroyedChancePercentage,
 			double deathExperienceDroppedPercentage, double deathExperienceDroppedChancePercentage,
 			double deathExperienceDestroyedPercentage, double deathExperienceDestroyedChancePercentage,
 			double deathLevelsDestroyedPercentage, double deathLevelsDestroyedChancePercentage,
-			Material[] whitelistedItems, String[] respawnProcessedCommands, String[] deathProcessedCommands)
+			String moneyLostBankAccount, Material[] whitelistedItems, String[] respawnProcessedCommands,
+			String[] deathProcessedCommands)
 	{
+		super();
 		this.enabled = enabled;
 		this.respawnHealthFlat = respawnHealthFlat;
 		this.respawnFoodFlat = respawnFoodFlat;
@@ -64,8 +72,11 @@ public class DeathPenaltiesWorld
 		this.deathExperienceDestroyedFlat = deathExperienceDestroyedFlat;
 		this.deathLevelsDestroyedFlat = deathLevelsDestroyedFlat;
 		this.respawnHealthPercentage = respawnHealthPercentage;
+		this.respawnHealthChancePercentage = respawnHealthChancePercentage;
 		this.respawnFoodPercentage = respawnFoodPercentage;
+		this.respawnFoodChancePercentage = respawnFoodChancePercentage;
 		this.deathMoneyLostPercentage = deathMoneyLostPercentage;
+		this.deathMoneyLostChancePercentage = deathMoneyLostChancePercentage;
 		this.deathItemsDroppedPercentage = deathItemsDroppedPercentage;
 		this.deathItemsDroppedChancePercentage = deathItemsDroppedChancePercentage;
 		this.deathItemsDestroyedPercentage = deathItemsDestroyedPercentage;
@@ -76,6 +87,7 @@ public class DeathPenaltiesWorld
 		this.deathExperienceDestroyedChancePercentage = deathExperienceDestroyedChancePercentage;
 		this.deathLevelsDestroyedPercentage = deathLevelsDestroyedPercentage;
 		this.deathLevelsDestroyedChancePercentage = deathLevelsDestroyedChancePercentage;
+		this.moneyLostBankAccount = moneyLostBankAccount;
 		this.whitelistedItems = whitelistedItems;
 		this.respawnProcessedCommands = respawnProcessedCommands;
 		this.deathProcessedCommands = deathProcessedCommands;
@@ -301,6 +313,51 @@ public class DeathPenaltiesWorld
 		this.deathLevelsDestroyedChancePercentage = deathLevelsDestroyedChancePercentage;
 	}
 
+	public double getRespawnHealthChancePercentage ()
+	{
+		return this.respawnHealthChancePercentage;
+	}
+
+	public void setRespawnHealthChancePercentage (double respawnHealthChancePercentage)
+	{
+		this.respawnHealthChancePercentage = respawnHealthChancePercentage;
+	}
+
+	public double getRespawnFoodChancePercentage ()
+	{
+		return this.respawnFoodChancePercentage;
+	}
+
+	public void setRespawnFoodChancePercentage (double respawnFoodChancePercentage)
+	{
+		this.respawnFoodChancePercentage = respawnFoodChancePercentage;
+	}
+
+	public double getDeathMoneyLostChancePercentage ()
+	{
+		return this.deathMoneyLostChancePercentage;
+	}
+
+	public void setDeathMoneyLostChancePercentage (double deathMoneyLostChancePercentage)
+	{
+		this.deathMoneyLostChancePercentage = deathMoneyLostChancePercentage;
+	}
+
+	public String getMoneyLostBankAccount ()
+	{
+		return this.moneyLostBankAccount;
+	}
+
+	public void setMoneyLostBankAccount (String moneyLostBankAccount)
+	{
+		this.moneyLostBankAccount = moneyLostBankAccount;
+	}
+	
+	public boolean hasMoneyLostBankAccount ()
+	{
+		return this.moneyLostBankAccount != null && this.moneyLostBankAccount.length() > 0;
+	}
+
 	public Material[] getWhitelistedItems ()
 	{
 		return this.whitelistedItems;
@@ -336,13 +393,15 @@ public class DeathPenaltiesWorld
 		return new DeathPenaltiesWorld (this.enabled, this.respawnHealthFlat, this.respawnFoodFlat,
 				this.deathMoneyLostFlat, this.deathItemsDroppedFlat, this.deathItemsDestroyedFlat,
 				this.deathExperienceDroppedFlat, this.deathExperienceDestroyedFlat, this.deathLevelsDestroyedFlat,
-				this.respawnHealthPercentage, this.respawnFoodPercentage, this.deathMoneyLostPercentage,
+				this.respawnHealthPercentage, this.respawnHealthChancePercentage, this.respawnFoodPercentage,
+				this.respawnFoodChancePercentage, this.deathMoneyLostPercentage, this.deathMoneyLostChancePercentage,
 				this.deathItemsDroppedPercentage, this.deathItemsDroppedChancePercentage,
 				this.deathItemsDestroyedPercentage, this.deathItemsDestroyedChancePercentage,
 				this.deathExperienceDroppedPercentage, this.deathExperienceDroppedChancePercentage,
 				this.deathExperienceDestroyedPercentage, this.deathExperienceDestroyedChancePercentage,
 				this.deathLevelsDestroyedPercentage, this.deathLevelsDestroyedChancePercentage,
-				this.whitelistedItems, this.respawnProcessedCommands, this.deathProcessedCommands);
+				this.moneyLostBankAccount, this.whitelistedItems, this.respawnProcessedCommands,
+				this.deathProcessedCommands);
 	}
 
 }

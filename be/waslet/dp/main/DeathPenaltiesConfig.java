@@ -4,13 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.PrimitiveIterator.OfDouble;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.mozilla.javascript.ast.NewExpression;
 
 public class DeathPenaltiesConfig
 {
@@ -45,7 +43,7 @@ public class DeathPenaltiesConfig
 			exc.printStackTrace();
 		}
 	}
-
+	
 	public String[] getTranslations ()
 	{
 		return null;
@@ -86,7 +84,7 @@ public class DeathPenaltiesConfig
 			exc.printStackTrace();
 		}
 	}
-
+	
 	/**
 	 * Load in plugin memory death penalties values of a world from config
 	 * @param worldName Name of the world values to load
@@ -99,8 +97,11 @@ public class DeathPenaltiesConfig
 		// check if value if is config and save it or default if not found
 		boolean enabled = (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.ENABLED.getConfigPath())) ? this.mainConfig.getBoolean(worldNamePath + DeathPenaltiesOption.ENABLED.getConfigPath(), false) : defaultValues.isEnabled();
 		double respawnHealthPercentage = (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.HEALTH_PERCENTAGE.getConfigPath())) ? this.mainConfig.getDouble(worldNamePath + DeathPenaltiesOption.HEALTH_PERCENTAGE.getConfigPath()) : 0.0;
+		double respawnHealthChancePercentage = (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.HEALTH_CHANCE_PERCENTAGE.getConfigPath())) ? this.mainConfig.getDouble(worldNamePath + DeathPenaltiesOption.HEALTH_CHANCE_PERCENTAGE.getConfigPath()) : defaultValues.getRespawnHealthChancePercentage();
 		double respawnFoodPercentage = (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.FOOD_PERCENTAGE.getConfigPath())) ? this.mainConfig.getDouble(worldNamePath + DeathPenaltiesOption.FOOD_PERCENTAGE.getConfigPath()) : 0.0;
+		double respawnFoodChancePercentage = (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.FOOD_CHANCE_PERCENTAGE.getConfigPath())) ? this.mainConfig.getDouble(worldNamePath + DeathPenaltiesOption.FOOD_CHANCE_PERCENTAGE.getConfigPath()) : defaultValues.getRespawnFoodChancePercentage();
 		double deathMoneyLostPercentage = (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.MONEY_LOST_PERCENTAGE.getConfigPath())) ? this.mainConfig.getDouble(worldNamePath + DeathPenaltiesOption.MONEY_LOST_PERCENTAGE.getConfigPath()) : 0.0;
+		double deathMoneyLostChancePercentage = (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.MONEY_LOST_CHANCE_PERCENTAGE.getConfigPath())) ? this.mainConfig.getDouble(worldNamePath + DeathPenaltiesOption.MONEY_LOST_CHANCE_PERCENTAGE.getConfigPath()) : defaultValues.getDeathMoneyLostChancePercentage();
 		double deathItemsDroppedPercentage = (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.ITEMS_DROPPED_PERCENTAGE.getConfigPath())) ? this.mainConfig.getDouble(worldNamePath + DeathPenaltiesOption.ITEMS_DROPPED_PERCENTAGE.getConfigPath()) : 0.0;
 		double deathItemsDroppedChancePercentage = (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.ITEMS_DROPPED_CHANCE_PERCENTAGE.getConfigPath())) ? this.mainConfig.getDouble(worldNamePath + DeathPenaltiesOption.ITEMS_DROPPED_CHANCE_PERCENTAGE.getConfigPath()) : defaultValues.getDeathItemsDroppedChancePercentage();
 		double deathItemsDestroyedPercentage = (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.ITEMS_DESTROYED_PERCENTAGE.getConfigPath())) ? this.mainConfig.getDouble(worldNamePath + DeathPenaltiesOption.ITEMS_DESTROYED_PERCENTAGE.getConfigPath()) : 0.0;
@@ -128,6 +129,7 @@ public class DeathPenaltiesConfig
 		deathExperienceDroppedPercentage = (deathExperienceDroppedFlat <= 0 && deathExperienceDroppedPercentage <= 0) ? defaultValues.getDeathExperienceDroppedPercentage() : deathExperienceDroppedPercentage;
 		deathExperienceDestroyedPercentage = (deathExperienceDestroyedFlat <= 0 && deathExperienceDestroyedPercentage <= 0) ? defaultValues.getDeathExperienceDestroyedPercentage() : deathExperienceDestroyedPercentage;
 		deathLevelsDestroyedPercentage = (deathLevelsDestroyedFlat <= 0 && deathLevelsDestroyedPercentage <= 0) ? defaultValues.getDeathLevelsDestroyedPercentage() : deathLevelsDestroyedPercentage;
+		String moneyLostBankAccount = (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.MONEY_LOST_BANK_ACCOUNT.getConfigPath())) ? this.mainConfig.getString(worldNamePath + DeathPenaltiesOption.MONEY_LOST_BANK_ACCOUNT.getConfigPath()) : defaultValues.getMoneyLostBankAccount();
 		Material[] whitelistedItems = defaultValues.getWhitelistedItems();
 		if (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.WHITELISTED_ITEMS.getConfigPath()))
 		{
@@ -162,13 +164,15 @@ public class DeathPenaltiesConfig
 		this.plugin.setDeathPenaltiesWorld(worldName, new DeathPenaltiesWorld (enabled, respawnHealthFlat, respawnFoodFlat,
 				deathMoneyLostFlat, deathItemsDroppedFlat, deathItemsDestroyedFlat,
 				deathExperienceDroppedFlat, deathExperienceDestroyedFlat, deathLevelsDestroyedFlat,
-				respawnHealthPercentage, respawnFoodPercentage, deathMoneyLostPercentage,
+				respawnHealthPercentage, respawnHealthChancePercentage, respawnFoodPercentage,
+				respawnFoodChancePercentage, deathMoneyLostPercentage, deathMoneyLostChancePercentage,
 				deathItemsDroppedPercentage, deathItemsDroppedChancePercentage,
 				deathItemsDestroyedPercentage, deathItemsDestroyedChancePercentage,
 				deathExperienceDroppedPercentage, deathExperienceDroppedChancePercentage,
 				deathExperienceDestroyedPercentage, deathExperienceDestroyedChancePercentage,
 				deathLevelsDestroyedPercentage, deathLevelsDestroyedChancePercentage,
-				whitelistedItems, respawnProcessedCommands, deathProcessedCommands));
+				moneyLostBankAccount, whitelistedItems, respawnProcessedCommands,
+				deathProcessedCommands));
 	}
 	
 	/**
@@ -178,32 +182,37 @@ public class DeathPenaltiesConfig
 	 */
 	public DeathPenaltiesWorld loadDefaultValues ()
 	{
+		String defaultValuesPath = "default_values.";
 		// check if values are set in config otherwise add it can be changed from plugin update so we update config
-		if (!this.mainConfig.contains("default_values." + DeathPenaltiesOption.ENABLED.getConfigPath())) this.mainConfig.set("default_values." + DeathPenaltiesOption.ENABLED.getConfigPath(), false);
-		if (!this.mainConfig.contains("default_values." + DeathPenaltiesOption.HEALTH_PERCENTAGE.getConfigPath())) this.mainConfig.set("default_values." + DeathPenaltiesOption.HEALTH_PERCENTAGE.getConfigPath(), 0.0);
-		if (!this.mainConfig.contains("default_values." + DeathPenaltiesOption.FOOD_PERCENTAGE.getConfigPath())) this.mainConfig.set("default_values." + DeathPenaltiesOption.FOOD_PERCENTAGE.getConfigPath(), 0.0);
-		if (!this.mainConfig.contains("default_values." + DeathPenaltiesOption.MONEY_LOST_PERCENTAGE.getConfigPath())) this.mainConfig.set("default_values." + DeathPenaltiesOption.MONEY_LOST_PERCENTAGE.getConfigPath(), 0.0);
-		if (!this.mainConfig.contains("default_values." + DeathPenaltiesOption.ITEMS_DROPPED_PERCENTAGE.getConfigPath())) this.mainConfig.set("default_values." + DeathPenaltiesOption.ITEMS_DROPPED_PERCENTAGE.getConfigPath(), 0.0);
-		if (!this.mainConfig.contains("default_values." + DeathPenaltiesOption.ITEMS_DROPPED_CHANCE_PERCENTAGE.getConfigPath())) this.mainConfig.set("default_values." + DeathPenaltiesOption.ITEMS_DROPPED_CHANCE_PERCENTAGE.getConfigPath(), 1.0);
-		if (!this.mainConfig.contains("default_values." + DeathPenaltiesOption.ITEMS_DESTROYED_PERCENTAGE.getConfigPath())) this.mainConfig.set("default_values." + DeathPenaltiesOption.ITEMS_DESTROYED_PERCENTAGE.getConfigPath(), 0.0);
-		if (!this.mainConfig.contains("default_values." + DeathPenaltiesOption.ITEMS_DESTROYED_CHANCE_PERCENTAGE.getConfigPath())) this.mainConfig.set("default_values." + DeathPenaltiesOption.ITEMS_DESTROYED_CHANCE_PERCENTAGE.getConfigPath(), 1.0);
-		if (!this.mainConfig.contains("default_values." + DeathPenaltiesOption.EXPERIENCE_DROPPED_PERCENTAGE.getConfigPath())) this.mainConfig.set("default_values." + DeathPenaltiesOption.EXPERIENCE_DROPPED_PERCENTAGE.getConfigPath(), 0.0);
-		if (!this.mainConfig.contains("default_values." + DeathPenaltiesOption.EXPERIENCE_DROPPED_CHANCE_PERCENTAGE.getConfigPath())) this.mainConfig.set("default_values." + DeathPenaltiesOption.EXPERIENCE_DROPPED_CHANCE_PERCENTAGE.getConfigPath(), 1.0);
-		if (!this.mainConfig.contains("default_values." + DeathPenaltiesOption.EXPERIENCE_DESTROYED_PERCENTAGE.getConfigPath())) this.mainConfig.set("default_values." + DeathPenaltiesOption.EXPERIENCE_DESTROYED_PERCENTAGE.getConfigPath(), 0.0);
-		if (!this.mainConfig.contains("default_values." + DeathPenaltiesOption.EXPERIENCE_DESTROYED_CHANCE_PERCENTAGE.getConfigPath())) this.mainConfig.set("default_values." + DeathPenaltiesOption.EXPERIENCE_DESTROYED_CHANCE_PERCENTAGE.getConfigPath(), 1.0);
-		if (!this.mainConfig.contains("default_values." + DeathPenaltiesOption.LEVELS_DESTROYED_PERCENTAGE.getConfigPath())) this.mainConfig.set("default_values." + DeathPenaltiesOption.LEVELS_DESTROYED_PERCENTAGE.getConfigPath(), 0.0);
-		if (!this.mainConfig.contains("default_values." + DeathPenaltiesOption.LEVELS_DESTROYED_CHANCE_PERCENTAGE.getConfigPath())) this.mainConfig.set("default_values." + DeathPenaltiesOption.LEVELS_DESTROYED_CHANCE_PERCENTAGE.getConfigPath(), 1.0);
-		if (!this.mainConfig.contains("default_values." + DeathPenaltiesOption.HEALTH_FLAT.getConfigPath())) this.mainConfig.set("default_values." + DeathPenaltiesOption.HEALTH_FLAT.getConfigPath(), 0);
-		if (!this.mainConfig.contains("default_values." + DeathPenaltiesOption.FOOD_FLAT.getConfigPath())) this.mainConfig.set("default_values." + DeathPenaltiesOption.FOOD_FLAT.getConfigPath(), 0);
-		if (!this.mainConfig.contains("default_values." + DeathPenaltiesOption.MONEY_LOST_FLAT.getConfigPath())) this.mainConfig.set("default_values." + DeathPenaltiesOption.MONEY_LOST_FLAT.getConfigPath(), 0);
-		if (!this.mainConfig.contains("default_values." + DeathPenaltiesOption.ITEMS_DROPPED_FLAT.getConfigPath())) this.mainConfig.set("default_values." + DeathPenaltiesOption.ITEMS_DROPPED_FLAT.getConfigPath(), 0);
-		if (!this.mainConfig.contains("default_values." + DeathPenaltiesOption.ITEMS_DESTROYED_FLAT.getConfigPath())) this.mainConfig.set("default_values." + DeathPenaltiesOption.ITEMS_DESTROYED_FLAT.getConfigPath(), 0);
-		if (!this.mainConfig.contains("default_values." + DeathPenaltiesOption.EXPERIENCE_DROPPED_FLAT.getConfigPath())) this.mainConfig.set("default_values." + DeathPenaltiesOption.EXPERIENCE_DROPPED_FLAT.getConfigPath(), 0);
-		if (!this.mainConfig.contains("default_values." + DeathPenaltiesOption.EXPERIENCE_DESTROYED_FLAT.getConfigPath())) this.mainConfig.set("default_values." + DeathPenaltiesOption.EXPERIENCE_DESTROYED_FLAT.getConfigPath(), 0);
-		if (!this.mainConfig.contains("default_values." + DeathPenaltiesOption.LEVELS_DESTROYED_FLAT.getConfigPath())) this.mainConfig.set("default_values." + DeathPenaltiesOption.LEVELS_DESTROYED_FLAT.getConfigPath(), 0);
-		if (!this.mainConfig.contains("default_values." + DeathPenaltiesOption.WHITELISTED_ITEMS.getConfigPath())) this.mainConfig.set("default_values." + DeathPenaltiesOption.WHITELISTED_ITEMS.getConfigPath(), new ArrayList<String>());
-		if (!this.mainConfig.contains("default_values." + DeathPenaltiesOption.RESPAWN_PROCESSED_COMMANDS.getConfigPath())) this.mainConfig.set("default_values." + DeathPenaltiesOption.RESPAWN_PROCESSED_COMMANDS.getConfigPath(), new ArrayList<String>());
-		if (!this.mainConfig.contains("default_values." + DeathPenaltiesOption.DEATH_PROCESSED_COMMANDS.getConfigPath())) this.mainConfig.set("default_values." + DeathPenaltiesOption.DEATH_PROCESSED_COMMANDS.getConfigPath(), new ArrayList<String>());
+		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.ENABLED.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.ENABLED.getConfigPath(), false);
+		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.HEALTH_PERCENTAGE.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.HEALTH_PERCENTAGE.getConfigPath(), 0.0);
+		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.HEALTH_CHANCE_PERCENTAGE.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.HEALTH_CHANCE_PERCENTAGE.getConfigPath(), 1.0);
+		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.FOOD_PERCENTAGE.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.FOOD_PERCENTAGE.getConfigPath(), 0.0);
+		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.FOOD_CHANCE_PERCENTAGE.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.FOOD_CHANCE_PERCENTAGE.getConfigPath(), 1.0);
+		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.MONEY_LOST_PERCENTAGE.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.MONEY_LOST_PERCENTAGE.getConfigPath(), 0.0);
+		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.MONEY_LOST_CHANCE_PERCENTAGE.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.MONEY_LOST_CHANCE_PERCENTAGE.getConfigPath(), 1.0);
+		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.ITEMS_DROPPED_PERCENTAGE.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.ITEMS_DROPPED_PERCENTAGE.getConfigPath(), 0.0);
+		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.ITEMS_DROPPED_CHANCE_PERCENTAGE.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.ITEMS_DROPPED_CHANCE_PERCENTAGE.getConfigPath(), 1.0);
+		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.ITEMS_DESTROYED_PERCENTAGE.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.ITEMS_DESTROYED_PERCENTAGE.getConfigPath(), 0.0);
+		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.ITEMS_DESTROYED_CHANCE_PERCENTAGE.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.ITEMS_DESTROYED_CHANCE_PERCENTAGE.getConfigPath(), 1.0);
+		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.EXPERIENCE_DROPPED_PERCENTAGE.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.EXPERIENCE_DROPPED_PERCENTAGE.getConfigPath(), 0.0);
+		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.EXPERIENCE_DROPPED_CHANCE_PERCENTAGE.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.EXPERIENCE_DROPPED_CHANCE_PERCENTAGE.getConfigPath(), 1.0);
+		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.EXPERIENCE_DESTROYED_PERCENTAGE.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.EXPERIENCE_DESTROYED_PERCENTAGE.getConfigPath(), 0.0);
+		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.EXPERIENCE_DESTROYED_CHANCE_PERCENTAGE.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.EXPERIENCE_DESTROYED_CHANCE_PERCENTAGE.getConfigPath(), 1.0);
+		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.LEVELS_DESTROYED_PERCENTAGE.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.LEVELS_DESTROYED_PERCENTAGE.getConfigPath(), 0.0);
+		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.LEVELS_DESTROYED_CHANCE_PERCENTAGE.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.LEVELS_DESTROYED_CHANCE_PERCENTAGE.getConfigPath(), 1.0);
+		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.HEALTH_FLAT.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.HEALTH_FLAT.getConfigPath(), 0);
+		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.FOOD_FLAT.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.FOOD_FLAT.getConfigPath(), 0);
+		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.MONEY_LOST_FLAT.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.MONEY_LOST_FLAT.getConfigPath(), 0);
+		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.ITEMS_DROPPED_FLAT.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.ITEMS_DROPPED_FLAT.getConfigPath(), 0);
+		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.ITEMS_DESTROYED_FLAT.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.ITEMS_DESTROYED_FLAT.getConfigPath(), 0);
+		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.EXPERIENCE_DROPPED_FLAT.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.EXPERIENCE_DROPPED_FLAT.getConfigPath(), 0);
+		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.EXPERIENCE_DESTROYED_FLAT.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.EXPERIENCE_DESTROYED_FLAT.getConfigPath(), 0);
+		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.LEVELS_DESTROYED_FLAT.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.LEVELS_DESTROYED_FLAT.getConfigPath(), 0);
+		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.MONEY_LOST_BANK_ACCOUNT.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.MONEY_LOST_BANK_ACCOUNT.getConfigPath(), "");
+		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.WHITELISTED_ITEMS.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.WHITELISTED_ITEMS.getConfigPath(), new ArrayList<String>());
+		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.RESPAWN_PROCESSED_COMMANDS.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.RESPAWN_PROCESSED_COMMANDS.getConfigPath(), new ArrayList<String>());
+		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.DEATH_PROCESSED_COMMANDS.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.DEATH_PROCESSED_COMMANDS.getConfigPath(), new ArrayList<String>());
 		try
 		{
 			this.mainConfig.save(this.mainConfigFile);
@@ -213,30 +222,34 @@ public class DeathPenaltiesConfig
 			exc.printStackTrace();
 		}
 		// check for each value if default values are set in config otherwise set non used values
-		boolean enabled = this.mainConfig.getBoolean("default_values." + DeathPenaltiesOption.ENABLED.getConfigPath(), false);
-		double respawnHealthPercentage = this.mainConfig.getDouble("default_values." + DeathPenaltiesOption.HEALTH_PERCENTAGE.getConfigPath(), 0.0);
-		double respawnFoodPercentage = this.mainConfig.getDouble("default_values." + DeathPenaltiesOption.FOOD_PERCENTAGE.getConfigPath(), 0.0);
-		double deathMoneyLostPercentage = this.mainConfig.getDouble("default_values." + DeathPenaltiesOption.MONEY_LOST_PERCENTAGE.getConfigPath(), 0.0);
-		double deathItemsDroppedPercentage = this.mainConfig.getDouble("default_values." + DeathPenaltiesOption.ITEMS_DROPPED_PERCENTAGE.getConfigPath(), 0.0);
-		double deathItemsDroppedChancePercentage = this.mainConfig.getDouble("default_values." + DeathPenaltiesOption.ITEMS_DROPPED_CHANCE_PERCENTAGE.getConfigPath(), 1.0);
-		double deathItemsDestroyedPercentage = this.mainConfig.getDouble("default_values." + DeathPenaltiesOption.ITEMS_DESTROYED_PERCENTAGE.getConfigPath(), 0.0);
-		double deathItemsDestroyedChancePercentage = this.mainConfig.getDouble("default_values." + DeathPenaltiesOption.ITEMS_DESTROYED_CHANCE_PERCENTAGE.getConfigPath(), 1.0);
-		double deathExperienceDroppedPercentage = this.mainConfig.getDouble("default_values." + DeathPenaltiesOption.EXPERIENCE_DROPPED_PERCENTAGE.getConfigPath(), 0.0);
-		double deathExperienceDroppedChancePercentage = this.mainConfig.getDouble("default_values." + DeathPenaltiesOption.EXPERIENCE_DROPPED_CHANCE_PERCENTAGE.getConfigPath(), 1.0);
-		double deathExperienceDestroyedPercentage = this.mainConfig.getDouble("default_values." + DeathPenaltiesOption.EXPERIENCE_DESTROYED_PERCENTAGE.getConfigPath(), 0.0);
-		double deathExperienceDestroyedChancePercentage = this.mainConfig.getDouble("default_values." + DeathPenaltiesOption.EXPERIENCE_DESTROYED_CHANCE_PERCENTAGE.getConfigPath(), 1.0);
-		double deathLevelsDestroyedPercentage = this.mainConfig.getDouble("default_values." + DeathPenaltiesOption.LEVELS_DESTROYED_PERCENTAGE.getConfigPath(), 0.0);
-		double deathLevelsDestroyedChancePercentage = this.mainConfig.getDouble("default_values." + DeathPenaltiesOption.LEVELS_DESTROYED_CHANCE_PERCENTAGE.getConfigPath(), 1.0);
+		boolean enabled = this.mainConfig.getBoolean(defaultValuesPath + DeathPenaltiesOption.ENABLED.getConfigPath(), false);
+		double respawnHealthPercentage = this.mainConfig.getDouble(defaultValuesPath + DeathPenaltiesOption.HEALTH_PERCENTAGE.getConfigPath(), 0.0);
+		double respawnHealthChancePercentage = this.mainConfig.getDouble(defaultValuesPath + DeathPenaltiesOption.HEALTH_CHANCE_PERCENTAGE.getConfigPath(), 0.0);
+		double respawnFoodPercentage = this.mainConfig.getDouble(defaultValuesPath + DeathPenaltiesOption.FOOD_PERCENTAGE.getConfigPath(), 0.0);
+		double respawnFoodChancePercentage = this.mainConfig.getDouble(defaultValuesPath + DeathPenaltiesOption.FOOD_CHANCE_PERCENTAGE.getConfigPath(), 0.0);
+		double deathMoneyLostPercentage = this.mainConfig.getDouble(defaultValuesPath + DeathPenaltiesOption.MONEY_LOST_PERCENTAGE.getConfigPath(), 0.0);
+		double deathMoneyLostChancePercentage = this.mainConfig.getDouble(defaultValuesPath + DeathPenaltiesOption.MONEY_LOST_CHANCE_PERCENTAGE.getConfigPath(), 0.0);
+		double deathItemsDroppedPercentage = this.mainConfig.getDouble(defaultValuesPath + DeathPenaltiesOption.ITEMS_DROPPED_PERCENTAGE.getConfigPath(), 0.0);
+		double deathItemsDroppedChancePercentage = this.mainConfig.getDouble(defaultValuesPath + DeathPenaltiesOption.ITEMS_DROPPED_CHANCE_PERCENTAGE.getConfigPath(), 1.0);
+		double deathItemsDestroyedPercentage = this.mainConfig.getDouble(defaultValuesPath + DeathPenaltiesOption.ITEMS_DESTROYED_PERCENTAGE.getConfigPath(), 0.0);
+		double deathItemsDestroyedChancePercentage = this.mainConfig.getDouble(defaultValuesPath + DeathPenaltiesOption.ITEMS_DESTROYED_CHANCE_PERCENTAGE.getConfigPath(), 1.0);
+		double deathExperienceDroppedPercentage = this.mainConfig.getDouble(defaultValuesPath + DeathPenaltiesOption.EXPERIENCE_DROPPED_PERCENTAGE.getConfigPath(), 0.0);
+		double deathExperienceDroppedChancePercentage = this.mainConfig.getDouble(defaultValuesPath + DeathPenaltiesOption.EXPERIENCE_DROPPED_CHANCE_PERCENTAGE.getConfigPath(), 1.0);
+		double deathExperienceDestroyedPercentage = this.mainConfig.getDouble(defaultValuesPath + DeathPenaltiesOption.EXPERIENCE_DESTROYED_PERCENTAGE.getConfigPath(), 0.0);
+		double deathExperienceDestroyedChancePercentage = this.mainConfig.getDouble(defaultValuesPath + DeathPenaltiesOption.EXPERIENCE_DESTROYED_CHANCE_PERCENTAGE.getConfigPath(), 1.0);
+		double deathLevelsDestroyedPercentage = this.mainConfig.getDouble(defaultValuesPath + DeathPenaltiesOption.LEVELS_DESTROYED_PERCENTAGE.getConfigPath(), 0.0);
+		double deathLevelsDestroyedChancePercentage = this.mainConfig.getDouble(defaultValuesPath + DeathPenaltiesOption.LEVELS_DESTROYED_CHANCE_PERCENTAGE.getConfigPath(), 1.0);
 		// check config and check if has percentage value set (must ignore default and set 0 then to avoid using default flat)
-		double respawnHealthFlat = (respawnHealthPercentage <= 0) ? (this.mainConfig.contains("default_values." + DeathPenaltiesOption.HEALTH_FLAT.getConfigPath())) ? this.mainConfig.getDouble("default_values." + DeathPenaltiesOption.HEALTH_FLAT.getConfigPath()) : 0.0 : 0.0;
-		int respawnFoodFlat = (respawnFoodPercentage <= 0) ? (this.mainConfig.contains("default_values." + DeathPenaltiesOption.FOOD_FLAT.getConfigPath())) ? this.mainConfig.getInt("default_values." + DeathPenaltiesOption.FOOD_FLAT.getConfigPath()) : 0 : 0;
-		double deathMoneyLostFlat = (deathMoneyLostPercentage <= 0) ? (this.mainConfig.contains("default_values." + DeathPenaltiesOption.MONEY_LOST_FLAT.getConfigPath())) ? this.mainConfig.getDouble("default_values." + DeathPenaltiesOption.MONEY_LOST_FLAT.getConfigPath()) : 0.0 : 0.0;
-		int deathItemsDroppedFlat = (deathItemsDroppedPercentage <= 0) ? (this.mainConfig.contains("default_values." + DeathPenaltiesOption.ITEMS_DROPPED_FLAT.getConfigPath())) ? this.mainConfig.getInt("default_values." + DeathPenaltiesOption.ITEMS_DROPPED_FLAT.getConfigPath()) : 0 : 0;
-		int deathItemsDestroyedFlat = (deathItemsDestroyedPercentage <= 0) ? (this.mainConfig.contains("default_values." + DeathPenaltiesOption.ITEMS_DESTROYED_FLAT.getConfigPath())) ? this.mainConfig.getInt("default_values." + DeathPenaltiesOption.ITEMS_DESTROYED_FLAT.getConfigPath()) : 0 : 0;
-		double deathExperienceDroppedFlat = (deathExperienceDroppedPercentage <= 0) ? (this.mainConfig.contains("default_values." + DeathPenaltiesOption.EXPERIENCE_DROPPED_FLAT.getConfigPath())) ? this.mainConfig.getDouble("default_values." + DeathPenaltiesOption.EXPERIENCE_DROPPED_FLAT.getConfigPath()) : 0.0 : 0.0;
-		double deathExperienceDestroyedFlat = (deathExperienceDestroyedPercentage <= 0) ? (this.mainConfig.contains("default_values." + DeathPenaltiesOption.EXPERIENCE_DESTROYED_FLAT.getConfigPath())) ? this.mainConfig.getDouble("default_values." + DeathPenaltiesOption.EXPERIENCE_DESTROYED_FLAT.getConfigPath()) : 0.0 : 0.0;
-		int deathLevelsDestroyedFlat = (deathLevelsDestroyedPercentage <= 0) ? (this.mainConfig.contains("default_values." + DeathPenaltiesOption.LEVELS_DESTROYED_FLAT.getConfigPath())) ? this.mainConfig.getInt("default_values." + DeathPenaltiesOption.LEVELS_DESTROYED_FLAT.getConfigPath()) : 0 : 0;
-		List<String> whitelistedItemsList = (this.mainConfig.contains("default_values." + DeathPenaltiesOption.WHITELISTED_ITEMS.getConfigPath())) ? this.mainConfig.getStringList("default_values." + DeathPenaltiesOption.WHITELISTED_ITEMS.getConfigPath()) : new ArrayList<String>();
+		double respawnHealthFlat = (respawnHealthPercentage <= 0) ? (this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.HEALTH_FLAT.getConfigPath())) ? this.mainConfig.getDouble(defaultValuesPath + DeathPenaltiesOption.HEALTH_FLAT.getConfigPath()) : 0.0 : 0.0;
+		int respawnFoodFlat = (respawnFoodPercentage <= 0) ? (this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.FOOD_FLAT.getConfigPath())) ? this.mainConfig.getInt(defaultValuesPath + DeathPenaltiesOption.FOOD_FLAT.getConfigPath()) : 0 : 0;
+		double deathMoneyLostFlat = (deathMoneyLostPercentage <= 0) ? (this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.MONEY_LOST_FLAT.getConfigPath())) ? this.mainConfig.getDouble(defaultValuesPath + DeathPenaltiesOption.MONEY_LOST_FLAT.getConfigPath()) : 0.0 : 0.0;
+		int deathItemsDroppedFlat = (deathItemsDroppedPercentage <= 0) ? (this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.ITEMS_DROPPED_FLAT.getConfigPath())) ? this.mainConfig.getInt(defaultValuesPath + DeathPenaltiesOption.ITEMS_DROPPED_FLAT.getConfigPath()) : 0 : 0;
+		int deathItemsDestroyedFlat = (deathItemsDestroyedPercentage <= 0) ? (this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.ITEMS_DESTROYED_FLAT.getConfigPath())) ? this.mainConfig.getInt(defaultValuesPath + DeathPenaltiesOption.ITEMS_DESTROYED_FLAT.getConfigPath()) : 0 : 0;
+		double deathExperienceDroppedFlat = (deathExperienceDroppedPercentage <= 0) ? (this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.EXPERIENCE_DROPPED_FLAT.getConfigPath())) ? this.mainConfig.getDouble(defaultValuesPath + DeathPenaltiesOption.EXPERIENCE_DROPPED_FLAT.getConfigPath()) : 0.0 : 0.0;
+		double deathExperienceDestroyedFlat = (deathExperienceDestroyedPercentage <= 0) ? (this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.EXPERIENCE_DESTROYED_FLAT.getConfigPath())) ? this.mainConfig.getDouble(defaultValuesPath + DeathPenaltiesOption.EXPERIENCE_DESTROYED_FLAT.getConfigPath()) : 0.0 : 0.0;
+		int deathLevelsDestroyedFlat = (deathLevelsDestroyedPercentage <= 0) ? (this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.LEVELS_DESTROYED_FLAT.getConfigPath())) ? this.mainConfig.getInt(defaultValuesPath + DeathPenaltiesOption.LEVELS_DESTROYED_FLAT.getConfigPath()) : 0 : 0;
+		String moneyLostBankAccount = (this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.MONEY_LOST_BANK_ACCOUNT.getConfigPath())) ? this.mainConfig.getString(defaultValuesPath + DeathPenaltiesOption.MONEY_LOST_BANK_ACCOUNT.getConfigPath()) : "";
+		List<String> whitelistedItemsList = (this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.WHITELISTED_ITEMS.getConfigPath())) ? this.mainConfig.getStringList(defaultValuesPath + DeathPenaltiesOption.WHITELISTED_ITEMS.getConfigPath()) : new ArrayList<String>();
 		Material[] whitelistedItems = new Material[whitelistedItemsList.size()];
 		int position = 0;
 		for (String next : whitelistedItemsList)
@@ -251,20 +264,22 @@ public class DeathPenaltiesConfig
 				continue;
 			}
 		}
-		List<String> respawnProcessedCommandsList = (this.mainConfig.contains("default_values." + DeathPenaltiesOption.RESPAWN_PROCESSED_COMMANDS.getConfigPath())) ? this.mainConfig.getStringList("default_values." + DeathPenaltiesOption.RESPAWN_PROCESSED_COMMANDS.getConfigPath()) : new ArrayList<String>();
+		List<String> respawnProcessedCommandsList = (this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.RESPAWN_PROCESSED_COMMANDS.getConfigPath())) ? this.mainConfig.getStringList(defaultValuesPath + DeathPenaltiesOption.RESPAWN_PROCESSED_COMMANDS.getConfigPath()) : new ArrayList<String>();
 		String[] respawnProcessedCommands = respawnProcessedCommandsList.toArray(new String[respawnProcessedCommandsList.size()]);
-		List<String> deathProcessedCommandsList = (this.mainConfig.contains("default_values." + DeathPenaltiesOption.DEATH_PROCESSED_COMMANDS.getConfigPath())) ? this.mainConfig.getStringList("default_values." + DeathPenaltiesOption.DEATH_PROCESSED_COMMANDS.getConfigPath()) : new ArrayList<String>();
+		List<String> deathProcessedCommandsList = (this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.DEATH_PROCESSED_COMMANDS.getConfigPath())) ? this.mainConfig.getStringList(defaultValuesPath + DeathPenaltiesOption.DEATH_PROCESSED_COMMANDS.getConfigPath()) : new ArrayList<String>();
 		String[] deathProcessedCommands = deathProcessedCommandsList.toArray(new String[deathProcessedCommandsList.size()]);
 		DeathPenaltiesWorld defaultValues = new DeathPenaltiesWorld (enabled, respawnHealthFlat, respawnFoodFlat,
 				deathMoneyLostFlat, deathItemsDroppedFlat, deathItemsDestroyedFlat,
 				deathExperienceDroppedFlat, deathExperienceDestroyedFlat, deathLevelsDestroyedFlat,
-				respawnHealthPercentage, respawnFoodPercentage, deathMoneyLostPercentage,
+				respawnHealthPercentage, respawnHealthChancePercentage, respawnFoodPercentage,
+				respawnFoodChancePercentage, deathMoneyLostPercentage, deathMoneyLostChancePercentage,
 				deathItemsDroppedPercentage, deathItemsDroppedChancePercentage,
 				deathItemsDestroyedPercentage, deathItemsDestroyedChancePercentage,
 				deathExperienceDroppedPercentage, deathExperienceDroppedChancePercentage,
 				deathExperienceDestroyedPercentage, deathExperienceDestroyedChancePercentage,
 				deathLevelsDestroyedPercentage, deathLevelsDestroyedChancePercentage,
-				whitelistedItems, respawnProcessedCommands, deathProcessedCommands);
+				moneyLostBankAccount, whitelistedItems, respawnProcessedCommands,
+				deathProcessedCommands);
 		this.plugin.setDeathPenaltiesWorld("default_values", defaultValues);
 		return defaultValues;
 	}

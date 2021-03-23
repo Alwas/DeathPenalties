@@ -14,11 +14,7 @@ public class DeathPenaltiesRunnable extends BukkitRunnable
 	/**
 	 * Creates a new BukkitRunnable that applies death penalties when runned
 	 * @param player Respawning player death penalties should be applied to
-	 * @param respawnHealthValue Flat health value that player will have after respawn (0 or less for percentages use)
-	 * @param respawnFoodValue Flat food value that player will have after respawn (0 or less for percentages use)
-	 * @param respawnHealthPercentage Health value that player will have after respawn in percentage (ignored if flat value > 0)
-	 * @param respawnFoodPercentage Food value that player will have after respawn in percentage (ignored if flat value > 0)
-	 * @param respawnEffects Array of effects to apply to player after respawn
+	 * @param world DeathPenaltiesWorld that holds all penalties values
 	 */
 	public DeathPenaltiesRunnable (Player player, DeathPenaltiesWorld world)
 	{
@@ -29,19 +25,31 @@ public class DeathPenaltiesRunnable extends BukkitRunnable
 	@Override
 	public void run ()
 	{
-		// if flat value is disabled use percentage and only set value if we have a valid percentage
-		if (this.world.getRespawnHealthFlat() <= 0)
+		// if flat value is disabled use percentage and only set value if we have a valid percentage also check if we have enough chance to trigger it
+		if (this.world.getRespawnHealthChancePercentage() > Math.random())
 		{
-			if (this.world.getRespawnHealthPercentage() <= 1 && this.world.getRespawnHealthPercentage() > 0) this.player.setHealth(this.player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * this.world.getRespawnHealthPercentage());
+			if (this.world.getRespawnHealthFlat() <= 0)
+			{
+				if (this.world.getRespawnHealthPercentage() <= 1 && this.world.getRespawnHealthPercentage() > 0) this.player.setHealth(this.player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() * this.world.getRespawnHealthPercentage());
+			}
+			// else updating player with flat value
+			else
+			{
+				this.player.setHealth(this.world.getRespawnHealthFlat());
+			}
 		}
-		// else updating player with flat value
-		else this.player.setHealth(this.world.getRespawnHealthFlat());
 		// same for food
-		if (this.world.getRespawnFoodFlat() <= 0)
+		if (this.world.getRespawnFoodChancePercentage() > Math.random())
 		{
-			if (this.world.getRespawnFoodPercentage() <= 1 && this.world.getRespawnFoodPercentage() > 0) this.player.setFoodLevel((int) (FOOD_LEVEL_MAX_VALUE * this.world.getRespawnFoodPercentage()));
+			if (this.world.getRespawnFoodFlat() <= 0)
+			{
+				if (this.world.getRespawnFoodPercentage() <= 1 && this.world.getRespawnFoodPercentage() > 0) this.player.setFoodLevel((int) (FOOD_LEVEL_MAX_VALUE * this.world.getRespawnFoodPercentage()));
+			}
+			else
+			{
+				this.player.setFoodLevel(this.world.getRespawnFoodFlat());
+			}
 		}
-		else this.player.setFoodLevel(this.world.getRespawnFoodFlat());
 		// process commands at respawn
 		for (String command : this.world.getRespawnProcessedCommands())
 		{

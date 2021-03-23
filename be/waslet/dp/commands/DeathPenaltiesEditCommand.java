@@ -28,9 +28,35 @@ public class DeathPenaltiesEditCommand implements CommandExecutor
 		World senderWorld = sender.getServer().getWorld(args[0]);
 		DeathPenaltiesOption option = DeathPenaltiesOption.getOption(args[1]);
 		// option does not exist
-		if (option == null) sender.sendMessage(ChatColor.RED + "The option \"" + args[1] + "\" does not exist.\nAvaiblable options: ENABLED (true/false); HEALTH_FLAT (value > 0); FOOD_FLAT (integer > 0); MONEY_LOST_FLAT (value > 0); ITEMS_DROPPED_FLAT (integer > 0); ITEMS_DESTROYED_FLAT (integer > 0); HEALTH_PERCENTAGE (value > 0 - max 1.0); FOOD_PERCENTAGE (value > 0 - max 1.0); MONEY_LOST_PERCENTAGE (value > 0 - max 1.0); ITEMS_DROPPED_PERCENTAGE (value > 0 - max 1.0); ITEMS_DROPPED_CHANCE_PERCENTAGE (value > 0 - max 1.0); ITEMS_DESTROYED_PERCENTAGE (value > 0 - max 1.0); ITEMS_DESTROYED_CHANCE_PERCENTAGE (value > 0 - max 1.0);");
+		if (option == null) sender.sendMessage(ChatColor.RED + "The option \"" + args[1] + "\" does not exist.\nAvaiblable options: "
+				+ "ENABLED (true/false); "
+				+ "HEALTH_FLAT (value > 0); "
+				+ "FOOD_FLAT (integer > 0); "
+				+ "MONEY_LOST_FLAT (value > 0); "
+				+ "ITEMS_DROPPED_FLAT (integer > 0); "
+				+ "ITEMS_DESTROYED_FLAT (integer > 0); "
+				+ "HEALTH_PERCENTAGE (value > 0 - max 1.0); "
+				+ "FOOD_PERCENTAGE (value > 0 - max 1.0); "
+				+ "MONEY_LOST_PERCENTAGE (value > 0 - max 1.0); "
+				+ "ITEMS_DROPPED_PERCENTAGE (value > 0 - max 1.0); "
+				+ "ITEMS_DROPPED_CHANCE_PERCENTAGE (value > 0 - max 1.0); "
+				+ "ITEMS_DESTROYED_PERCENTAGE (value > 0 - max 1.0); "
+				+ "ITEMS_DESTROYED_CHANCE_PERCENTAGE (value > 0 - max 1.0);");
 		// invalid option value
-		else if (!option.isValid(args[2])) sender.sendMessage(ChatColor.RED + "The option value \"" + args[2] + "\" is not valid for option \"" + args[1] + "\".\nAvaiblable options: ENABLED (true/false); HEALTH_FLAT (value > 0); FOOD_FLAT (integer > 0); MONEY_LOST_FLAT (value > 0); ITEMS_DROPPED_FLAT (integer > 0); ITEMS_DESTROYED_FLAT (integer > 0); HEALTH_PERCENTAGE (value > 0 - max 1.0); FOOD_PERCENTAGE (value > 0 - max 1.0); MONEY_LOST_PERCENTAGE (value > 0 - max 1.0); ITEMS_DROPPED_PERCENTAGE (value > 0 - max 1.0); ITEMS_DROPPED_CHANCE_PERCENTAGE (value > 0 - max 1.0); ITEMS_DESTROYED_PERCENTAGE (value > 0 - max 1.0); ITEMS_DESTROYED_CHANCE_PERCENTAGE (value > 0 - max 1.0);");
+		else if (!option.isValid(args[2])) sender.sendMessage(ChatColor.RED + "The option value \"" + args[2] + "\" is not valid for option \"" + args[1] + "\".\nAvaiblable options: "
+				+ "ENABLED (true/false); "
+				+ "HEALTH_FLAT (value > 0); "
+				+ "FOOD_FLAT (integer > 0); "
+				+ "MONEY_LOST_FLAT (value > 0); "
+				+ "ITEMS_DROPPED_FLAT (integer > 0); "
+				+ "ITEMS_DESTROYED_FLAT (integer > 0); "
+				+ "HEALTH_PERCENTAGE (value > 0 - max 1.0); "
+				+ "FOOD_PERCENTAGE (value > 0 - max 1.0); "
+				+ "MONEY_LOST_PERCENTAGE (value > 0 - max 1.0); "
+				+ "ITEMS_DROPPED_PERCENTAGE (value > 0 - max 1.0); "
+				+ "ITEMS_DROPPED_CHANCE_PERCENTAGE (value > 0 - max 1.0); "
+				+ "ITEMS_DESTROYED_PERCENTAGE (value > 0 - max 1.0); "
+				+ "ITEMS_DESTROYED_CHANCE_PERCENTAGE (value > 0 - max 1.0);");
 		// edit all worlds
 		else if (args[0].equalsIgnoreCase("all")) for (World world : sender.getServer().getWorlds()) editValue(sender, this.plugin.getDeathPenaltiesWorld(world.getName()), world.getName(), option, args[2]);
 		// specific world does not exist
