@@ -23,8 +23,6 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.garbagemule.MobArena.MobArena;
-import com.garbagemule.MobArena.events.ArenaPlayerJoinEvent;
-import com.garbagemule.MobArena.events.ArenaPlayerLeaveEvent;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
 
@@ -77,6 +75,7 @@ public class DeathPenalties extends JavaPlugin implements Listener
 			this.mobArena = (MobArena) mobArenaPlugin;
 			this.arenaPlayersUUIDs = new ArrayList<>();
 			getServer().getLogger().log(Level.INFO, "[" + getName() + "] MobArena found: disabling death penalties for arenas");
+			getServer().getPluginManager().registerEvents(new MobArenaListener(this), this);
 		}
 		// commands executors
 		getCommand("dpstate").setExecutor(new DeathPenaltiesStateCommand(this));
@@ -247,22 +246,10 @@ public class DeathPenalties extends JavaPlugin implements Listener
 			else if (data[0].equalsIgnoreCase("player")) event.getEntity().performCommand(data[1].replace("%player%", event.getEntity().getName()));
 		}
 	}
-
-	/*
-	 * MOB ARENA MANAGMENT
-	 * since mob arena plugin arena managers players functions does not seem to be working we will use the event system to keep track of in arena players
-	 */
 	
-	@EventHandler (priority = EventPriority.NORMAL)
-	public void onPlayerJoinsArena (ArenaPlayerJoinEvent event)
+	public ArrayList<String> getArenaPlayers ()
 	{
-		this.arenaPlayersUUIDs.add(event.getPlayer().getUniqueId().toString());
-	}
-
-	@EventHandler (priority = EventPriority.NORMAL)
-	public void onPlayerLeavesArena (ArenaPlayerLeaveEvent event)
-	{
-		this.arenaPlayersUUIDs.remove(event.getPlayer().getUniqueId().toString());
+		return this.arenaPlayersUUIDs;
 	}
 
 	/**
