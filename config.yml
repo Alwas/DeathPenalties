@@ -57,6 +57,9 @@
 #  death-money-lost-bank-account: 'example_account'
 #  # the account the lost money with penalties is going to
 #
+#  death-money-lost-killer: false
+#  # if true money lost by the penalty will be added to the killer (money is doubled if a bank account is set too)
+#
 #  death-items-dropped-percentage: 0.05
 #  # items that will be dropped from penalised player inventory on death in percentage
 #
@@ -142,6 +145,7 @@ default_values:
   death-money-lost-flat: 10
   death-money-lost-chance-percentage: 1.0
   death-money-lost-bank-account: ''
+  death-money-lost-killer: false
   death-items-dropped-percentage: 0.25
   death-items-dropped-chance-percentage: 0.5
   death-items-destroyed-flat: 2

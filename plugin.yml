@@ -2,7 +2,7 @@ name: DeathPenalties
 load: POSTWORLD
 description: DeathPenalties is a plugin from the WaffleProject's plugins collection that is designed to control penalties applied to players when they die !
 main: be.waslet.dp.main.DeathPenalties
-version: Release-1.5.2
+version: Release-1.5.3
 authors: [Whawhatausore]
 website: https://www.waffleproject.com/
 database: false

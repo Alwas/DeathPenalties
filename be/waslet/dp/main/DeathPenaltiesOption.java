@@ -16,6 +16,7 @@ public enum DeathPenaltiesOption
 	MONEY_LOST_PERCENTAGE("death-money-lost-percentage", true),
 	MONEY_LOST_CHANCE_PERCENTAGE("death-money-lost-chance-percentage", false),
 	MONEY_LOST_BANK_ACCOUNT("death-money-lost-bank-account", false),
+	MONEY_LOST_KILLER("death-money-lost-killer", false),
 	ITEMS_DROPPED_PERCENTAGE("death-items-dropped-percentage", true),
 	ITEMS_DROPPED_CHANCE_PERCENTAGE("death-items-dropped-chance-percentage", true),
 	ITEMS_DESTROYED_PERCENTAGE("death-items-destroyed-percentage", true),

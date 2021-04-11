@@ -130,6 +130,7 @@ public class DeathPenaltiesConfig
 		deathExperienceDestroyedPercentage = (deathExperienceDestroyedFlat <= 0 && deathExperienceDestroyedPercentage <= 0) ? defaultValues.getDeathExperienceDestroyedPercentage() : deathExperienceDestroyedPercentage;
 		deathLevelsDestroyedPercentage = (deathLevelsDestroyedFlat <= 0 && deathLevelsDestroyedPercentage <= 0) ? defaultValues.getDeathLevelsDestroyedPercentage() : deathLevelsDestroyedPercentage;
 		String moneyLostBankAccount = (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.MONEY_LOST_BANK_ACCOUNT.getConfigPath())) ? this.mainConfig.getString(worldNamePath + DeathPenaltiesOption.MONEY_LOST_BANK_ACCOUNT.getConfigPath()) : defaultValues.getMoneyLostBankAccount();
+		boolean moneyLostKiller = (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.MONEY_LOST_KILLER.getConfigPath())) ? this.mainConfig.getBoolean(worldNamePath + DeathPenaltiesOption.MONEY_LOST_KILLER.getConfigPath()) : defaultValues.hasMoneyLostKiller();
 		Material[] whitelistedItems = defaultValues.getWhitelistedItems();
 		if (this.mainConfig.contains(worldNamePath + DeathPenaltiesOption.WHITELISTED_ITEMS.getConfigPath()))
 		{
@@ -171,7 +172,7 @@ public class DeathPenaltiesConfig
 				deathExperienceDroppedPercentage, deathExperienceDroppedChancePercentage,
 				deathExperienceDestroyedPercentage, deathExperienceDestroyedChancePercentage,
 				deathLevelsDestroyedPercentage, deathLevelsDestroyedChancePercentage,
-				moneyLostBankAccount, whitelistedItems, respawnProcessedCommands,
+				moneyLostBankAccount, moneyLostKiller, whitelistedItems, respawnProcessedCommands,
 				deathProcessedCommands));
 	}
 	
@@ -210,6 +211,7 @@ public class DeathPenaltiesConfig
 		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.EXPERIENCE_DESTROYED_FLAT.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.EXPERIENCE_DESTROYED_FLAT.getConfigPath(), 0);
 		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.LEVELS_DESTROYED_FLAT.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.LEVELS_DESTROYED_FLAT.getConfigPath(), 0);
 		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.MONEY_LOST_BANK_ACCOUNT.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.MONEY_LOST_BANK_ACCOUNT.getConfigPath(), "");
+		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.MONEY_LOST_KILLER.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.MONEY_LOST_KILLER.getConfigPath(), false);
 		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.WHITELISTED_ITEMS.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.WHITELISTED_ITEMS.getConfigPath(), new ArrayList<String>());
 		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.RESPAWN_PROCESSED_COMMANDS.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.RESPAWN_PROCESSED_COMMANDS.getConfigPath(), new ArrayList<String>());
 		if (!this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.DEATH_PROCESSED_COMMANDS.getConfigPath())) this.mainConfig.set(defaultValuesPath + DeathPenaltiesOption.DEATH_PROCESSED_COMMANDS.getConfigPath(), new ArrayList<String>());
@@ -249,6 +251,7 @@ public class DeathPenaltiesConfig
 		double deathExperienceDestroyedFlat = (deathExperienceDestroyedPercentage <= 0) ? (this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.EXPERIENCE_DESTROYED_FLAT.getConfigPath())) ? this.mainConfig.getDouble(defaultValuesPath + DeathPenaltiesOption.EXPERIENCE_DESTROYED_FLAT.getConfigPath()) : 0.0 : 0.0;
 		int deathLevelsDestroyedFlat = (deathLevelsDestroyedPercentage <= 0) ? (this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.LEVELS_DESTROYED_FLAT.getConfigPath())) ? this.mainConfig.getInt(defaultValuesPath + DeathPenaltiesOption.LEVELS_DESTROYED_FLAT.getConfigPath()) : 0 : 0;
 		String moneyLostBankAccount = (this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.MONEY_LOST_BANK_ACCOUNT.getConfigPath())) ? this.mainConfig.getString(defaultValuesPath + DeathPenaltiesOption.MONEY_LOST_BANK_ACCOUNT.getConfigPath()) : "";
+		boolean moneyLostKiller = (this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.MONEY_LOST_KILLER.getConfigPath())) ? this.mainConfig.getBoolean(defaultValuesPath + DeathPenaltiesOption.MONEY_LOST_KILLER.getConfigPath()) : false;
 		List<String> whitelistedItemsList = (this.mainConfig.contains(defaultValuesPath + DeathPenaltiesOption.WHITELISTED_ITEMS.getConfigPath())) ? this.mainConfig.getStringList(defaultValuesPath + DeathPenaltiesOption.WHITELISTED_ITEMS.getConfigPath()) : new ArrayList<String>();
 		Material[] whitelistedItems = new Material[whitelistedItemsList.size()];
 		int position = 0;
@@ -278,7 +281,7 @@ public class DeathPenaltiesConfig
 				deathExperienceDroppedPercentage, deathExperienceDroppedChancePercentage,
 				deathExperienceDestroyedPercentage, deathExperienceDestroyedChancePercentage,
 				deathLevelsDestroyedPercentage, deathLevelsDestroyedChancePercentage,
-				moneyLostBankAccount, whitelistedItems, respawnProcessedCommands,
+				moneyLostBankAccount, moneyLostKiller, whitelistedItems, respawnProcessedCommands,
 				deathProcessedCommands);
 		this.plugin.setDeathPenaltiesWorld("default_values", defaultValues);
 		return defaultValues;
