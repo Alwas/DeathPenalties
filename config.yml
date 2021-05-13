@@ -30,11 +30,9 @@
 #
 #  death-items-dropped-flat: 1 (integer numbers)
 #  # items that will be dropped from penalised player inventory on death
-#  # this option only works if keepInventory gamerule is set to true
 #
 #  death-items-destroyed-flat: 1 (integer numbers)
 #  # items that will be destroyed in penalised player inventory on death
-#  # this option still applies before the drop option if keepInventory gamerule is set to true
 #
 #  respawn-health-percentage: 0.21
 #  # health penalised player will respawn with in percentage (0.21 is 21 percents)
@@ -74,7 +72,6 @@
 #
 #  death-experience-dropped-flat: 10.0
 #  # experience that will be dropped from penalised player inventory on death
-#  # this option only works if keepInventory gamerule is set to true
 #
 #  death-experience-dropped-percentage: 0.1
 #  # experience that will be dropped from penalised player inventory on death in percentage

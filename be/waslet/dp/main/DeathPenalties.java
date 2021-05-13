@@ -1,9 +1,11 @@
 package be.waslet.dp.main;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
 
@@ -166,6 +168,7 @@ public class DeathPenalties extends JavaPlugin implements Listener
 		// set event keep inventory to true so we can ignore the world value without changing it
 		// then we can apply our drop/destroy items penalties
 		event.setKeepInventory(true);
+		event.getDrops().clear();
 		// first check destroyed chance
 		// use destroy items functions with player
 		// if flat value is disabled use percentage and only set value if we have a valid percentage
@@ -287,6 +290,50 @@ public class DeathPenalties extends JavaPlugin implements Listener
 			player.getWorld().dropItemNaturally(player.getLocation(), player.getInventory().getContents()[itemsSlots[randomArray[i]]]);
 			player.getInventory().setItem(itemsSlots[randomArray[i]], null);
 		}
+	}
+	
+	private void dropItems (Player player, List<ItemStack> drops, int count, Material[] whitelist)
+	{
+//		if (count <= 0) return;
+//		LinkedList<ItemStack> whitelistedDrops = new LinkedList<>();
+//		for (ItemStack drop : drops)
+//		{
+//			if (isWhitelisted(whitelist, drop.getType())) whitelistedDrops.add(drop);
+//		}
+//		for (ItemStack drop : whitelistedDrops) drops.remove(drop);
+
+		Map<Integer, ItemStack> savedItems = new HashMap<>();
+		ItemStack[] items = player.getInventory().getContents();
+		for (int i = 0; i < items.length; i++)
+		{
+			ItemStack item = items[i];
+			if (item != null)
+			{
+				savedItems.put(i, item);
+			}
+		}
+		
+		for (int i = 0; i < items.length; i++)
+		{
+			ItemStack item = items[i];
+			if (item == null) continue;
+			if (isWhitelisted(whitelist, item.getType()))
+			{
+				savedItems.put(i, items[i]);
+			}
+		}
+		Integer[] slots = getInventoryItemsSlots(player.getInventory(), whitelist);
+		int[] randomArray = getShuffledIntArray(slots.length - count);
+		for (int i = 0; i < count && i < slots.length; i++)
+		{
+			savedItems.put(slots[randomArray[i]], items[randomArray[i]]);
+		}
+		
+//		int itemsToRemoveCount = drops.size() - count;
+//		for (int i = drops.size() - 1; i > itemsToRemoveCount && i > 0; i--)
+//		{
+//			drops.remove((int) ((this.random.nextDouble() * (i + 1))));
+//		}
 	}
 
 	/**
